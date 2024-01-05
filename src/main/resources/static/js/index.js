@@ -1,6 +1,6 @@
 let ws = null;
 let webRtcPeer;
-let blinkPromiseID = null;
+let blinkTimerId = null;
 
 window.onload = function () {
     //init websocket
@@ -74,9 +74,9 @@ function stop() {
 }
 
 function handleConnected() {
-    if (blinkPromiseID != null) {
-        clearInterval(blinkPromiseID);
-        blinkPromiseID = null;
+    if (blinkTimerId != null) {
+        clearInterval(blinkTimerId);
+        blinkTimerId = null;
     }
 
     $("video").css("opacity", 1);
@@ -122,7 +122,7 @@ function sendMessage(message) {
 function showBlinks() {
     $("#btnStart").prop("disabled", true);
     $("#btnStop").prop("disabled", false);
-    blinkPromiseID = setInterval(() => {
+    blinkTimerId = setInterval(() => {
         if ($("video").eq(0).css("opacity") != 1) {
             $("video").css("opacity", 1);
         } else {
@@ -136,9 +136,9 @@ function hideBlinks() {
     $("#btnStop").prop("disabled", true);
     $("video").attr("poster", "img/webrtc.png");
     $("video").css("opacity", 1);
-    if (blinkPromiseID != null) {
-        clearInterval(blinkPromiseID);
-        blinkPromiseID = null;
+    if (blinkTimerId != null) {
+        clearInterval(blinkTimerId);
+        blinkTimerId = null;
     }
 }
 
