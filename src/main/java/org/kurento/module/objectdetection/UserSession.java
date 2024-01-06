@@ -9,7 +9,17 @@ public class UserSession {
   private WebRtcEndpoint webRtcEndpoint;
   private MediaPipeline mediaPipeline;
   private ObjDet objdet;
-  private String sessionId;
+  private String sessionId = "";
+  private String kmsSessionId = "";
+  private String sdpOffer = "";
+
+  public String getSdpOffer() {
+    return sdpOffer;
+  }
+
+  public void setSdpOffer(String sdpOffer) {
+    this.sdpOffer = sdpOffer;
+  }
 
   public UserSession() {
   }
@@ -48,6 +58,14 @@ public class UserSession {
 
   public void setSessionId(String sessionId) {
     this.sessionId = sessionId;
+  }
+
+  public String getKmsSessionId() {
+    return kmsSessionId;
+  }
+
+  public void setKmsSessionId(String kmsSessionId) {
+    this.kmsSessionId = kmsSessionId;
   }
 
   public void destroy() {

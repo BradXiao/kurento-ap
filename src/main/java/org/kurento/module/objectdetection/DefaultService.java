@@ -14,6 +14,9 @@ import org.kurento.jsonrpc.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import jakarta.websocket.Session;
@@ -23,40 +26,30 @@ public class DefaultService {
     @Autowired
     private KurentoClient kurento;
 
+    private static final Gson gson = new GsonBuilder().create();
+
     private final Logger log = LoggerFactory.getLogger(DefaultService.class);
 
     private final ConcurrentHashMap<String, UserSession> users = new ConcurrentHashMap<>();
 
-    public void start(final Session session, JsonObject jsonMessage) {
-
+    public void initKMSSession(final Session session, JsonObject jsonMessage) {
         UserSession user = new UserSession();
         MediaPipeline pipeline = kurento.createMediaPipeline();
         user.setMediaPipeline(pipeline);
         WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).build();
         user.setWebRtcEndpoint(webRtcEndpoint);
 
-        user.setSessionId(session.getId());
         // test
         ObjDet objDetFilter = new ObjDet.Builder(pipeline).build();
-        objDetFilter.setIsDraw(true);
         webRtcEndpoint.connect(objDetFilter);
         objDetFilter.connect(webRtcEndpoint);
 
         user.setObjdet(objDetFilter);
+        registerEvents(session, webRtcEndpoint, objDetFilter);
+        user.setSdpOffer(jsonMessage.get("sdpOffer").getAsString());
         users.put(session.getId(), user);
 
-        registerEvents(session, webRtcEndpoint);
-
-        String sdpOffer = jsonMessage.get("sdpOffer").getAsString();
-        String sdpAnswer = webRtcEndpoint.processOffer(sdpOffer);
-
-        JsonObject response = new JsonObject();
-        response.addProperty("id", "sdpAnswer");
-        response.addProperty("sdpAnswer", sdpAnswer);
-        sendMessage(session, response.toString());
-
-        webRtcEndpoint.gatherCandidates();
-        objDetFilter.startInferring();
+        user.getObjdet().initSession();
 
     }
 
@@ -70,19 +63,9 @@ public class DefaultService {
 
     }
 
-    private void registerEvents(Session session, WebRtcEndpoint webRtcEndpoint) {
-        webRtcEndpoint.addIceCandidateFoundListener(event -> {
-            JsonObject response = new JsonObject();
-            response.addProperty("id", "iceCandidate");
-            response.add("candidate", JsonUtils.toJsonObject(event.getCandidate()));
-            sendMessage(session, response.toString());
-        });
-        webRtcEndpoint.addConnectionStateChangedListener(event -> {
-            log.info("{}", event.getNewState());
-            if (event.getNewState().toString().equals("CONNECTED")) {
-                sendMessage(session, "{\"id\":\"connected\"}");
-            }
-        });
+    public void heartbeat(final Session session) {
+        UserSession user = users.get(session.getId());
+        user.getObjdet().heartbeat(user.getKmsSessionId());
     }
 
     public void stop(Session session) {
@@ -111,5 +94,49 @@ public class DefaultService {
             }
 
         }
+    }
+    // ==============================================================================================================
+    // private
+    // ==============================================================================================================
+
+    private void registerEvents(Session session, WebRtcEndpoint webRtcEndpoint, ObjDet objDetFilter) {
+        webRtcEndpoint.addIceCandidateFoundListener(event -> {
+            JsonObject response = new JsonObject();
+            response.addProperty("id", "iceCandidate");
+            response.add("candidate", JsonUtils.toJsonObject(event.getCandidate()));
+            sendMessage(session, response.toString());
+        });
+        webRtcEndpoint.addConnectionStateChangedListener(event -> {
+            log.info("{}", event.getNewState());
+            if (event.getNewState().toString().equals("CONNECTED")) {
+                sendMessage(session, "{\"id\":\"connected\"}");
+            }
+        });
+
+        objDetFilter.addsessionInitStateListener(event -> {
+            JsonObject jsonObj = gson.fromJson(event.getStateJSON(), JsonObject.class);
+            if (jsonObj.get("state").getAsString().equals("000")) {
+                UserSession user = users.get(session.getId());
+                user.setKmsSessionId(jsonObj.get("sessionId").getAsString());
+                startStreaming(session, user.getSdpOffer());
+            }
+        });
+
+    }
+
+    private void startStreaming(final Session session, String sdpOffer) {
+
+        UserSession user = users.get(session.getId());
+
+        String sdpAnswer = user.getWebRtcEndpoint().processOffer(sdpOffer);
+        user.getObjdet().startInferring();
+        user.getObjdet().setIsDraw(true);
+        JsonObject response = new JsonObject();
+        response.addProperty("id", "sdpAnswer");
+        response.addProperty("sdpAnswer", sdpAnswer);
+        sendMessage(session, response.toString());
+
+        user.getWebRtcEndpoint().gatherCandidates();
+
     }
 }

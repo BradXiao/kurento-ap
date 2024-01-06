@@ -1,8 +1,13 @@
 let ws = null;
 let webRtcPeer;
 let blinkTimerId = null;
+let heartbeatTimerId = null;
 
 window.onload = function () {
+    startWs();
+};
+
+function startWs() {
     //init websocket
     console.log("init");
     ws = new WebSocket("wss://" + location.host + "/objdet");
@@ -27,10 +32,17 @@ window.onload = function () {
                 handleError(parsedMessage);
         }
     };
-};
+    ws.onclose = function (ev) {
+        ws = null;
+    };
+}
 
 function start() {
     console.log("start");
+    if (ws == null) {
+        startWs();
+    }
+
     showBlinks();
 
     var options = {
@@ -54,11 +66,7 @@ function start() {
                 return;
             }
 
-            var message = {
-                id: "start",
-                sdpOffer: offerSdp,
-            };
-            sendMessage(message);
+            sendMessage({ id: "initKMSSession", sdpOffer: offerSdp });
         });
     });
 }
@@ -71,6 +79,10 @@ function stop() {
         webRtcPeer = null;
         sendMessage({ id: "stop" });
     }
+
+    if (heartbeatTimerId != null) {
+        clearInterval(heartbeatTimerId);
+    }
 }
 
 function handleConnected() {
@@ -79,6 +91,9 @@ function handleConnected() {
         blinkTimerId = null;
     }
 
+    heartbeatTimerId = setInterval(() => {
+        sendMessage({ id: "heartbeat" });
+    }, 30000);
     $("video").css("opacity", 1);
 }
 

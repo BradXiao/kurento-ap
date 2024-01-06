@@ -45,8 +45,8 @@ public class DefaultController implements ApplicationContextAware {
         log.debug("Incoming message: {}", jsonMessage);
 
         switch (jsonMessage.get("id").getAsString()) {
-            case "start":
-                service.start(session, jsonMessage);
+            case "initKMSSession":
+                service.initKMSSession(session, jsonMessage);
                 break;
             case "stop":
                 service.stop(session);
@@ -54,6 +54,9 @@ public class DefaultController implements ApplicationContextAware {
                 break;
             case "onIceCandidate":
                 service.onIceCandidate(session, jsonMessage);
+                break;
+            case "heartbeat":
+                service.heartbeat(session);
                 break;
             default:
                 service.sendError(session, "Invalid message with id " + jsonMessage.get("id").getAsString());
