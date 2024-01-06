@@ -122,6 +122,10 @@ public class DefaultService {
             }
         });
 
+        objDetFilter.adderrorMessageListener(event -> {
+            log.error("Error message from KMS, {}", event.getMsgJSON());
+        });
+
     }
 
     private void startStreaming(final Session session, String sdpOffer) {
