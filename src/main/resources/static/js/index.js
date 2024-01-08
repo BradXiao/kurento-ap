@@ -37,6 +37,9 @@ function startWs() {
     };
     ws.onclose = function (ev) {
         ws = null;
+        if (heartbeatTimerId != null) {
+            clearInterval(heartbeatTimerId);
+        }
     };
     ws.onopen = function (ev) {
         sendMessage({ id: "initSession" });
