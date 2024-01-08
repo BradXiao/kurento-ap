@@ -25,6 +25,10 @@ import jakarta.websocket.Session;
 public class DefaultService {
     @Autowired
     private KurentoClient kurento;
+    @Autowired
+    private Utils utils;
+    @Autowired
+    private DefaultConfiguration configuration;
 
     private static final Gson gson = new GsonBuilder().create();
 
@@ -32,11 +36,33 @@ public class DefaultService {
 
     private final ConcurrentHashMap<String, UserSession> users = new ConcurrentHashMap<>();
 
-    public void initKMSSession(final Session session, JsonObject jsonMessage) {
+    public void initSession(final Session session) {
         UserSession user = new UserSession();
+        users.put(session.getId(), user);
+
+        String username = session.getId();
+
+        String[] turnInfo = utils.getTurnCredInfo(username);
+        user.setTurnInfo(turnInfo);
+
+        JsonObject msg = new JsonObject();
+        msg.addProperty("id", "turnInfo");
+        msg.addProperty("turnserver", configuration.TURN_SERVER);
+        msg.addProperty("username", turnInfo[0]);
+        msg.addProperty("credential", turnInfo[1]);
+
+        sendMessage(session, msg.toString());
+    }
+
+    public void initKMSSession(final Session session, JsonObject jsonMessage) {
+        UserSession user = users.get(session.getId());
         MediaPipeline pipeline = kurento.createMediaPipeline();
         user.setMediaPipeline(pipeline);
         WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).build();
+
+        String[] turnInfo = user.getTurnInfo();
+        webRtcEndpoint
+                .setTurnUrl(String.format("%s:%s@%s", turnInfo[0], turnInfo[1], configuration.TURN_INTERNAL_SREVER));
         user.setWebRtcEndpoint(webRtcEndpoint);
 
         // test
@@ -47,7 +73,6 @@ public class DefaultService {
         user.setObjdet(objDetFilter);
         registerEvents(session, webRtcEndpoint, objDetFilter);
         user.setSdpOffer(jsonMessage.get("sdpOffer").getAsString());
-        users.put(session.getId(), user);
 
         user.getObjdet().initSession();
 

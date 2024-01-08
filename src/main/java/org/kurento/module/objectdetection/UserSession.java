@@ -12,6 +12,7 @@ public class UserSession {
   private String sessionId = "";
   private String kmsSessionId = "";
   private String sdpOffer = "";
+  private String[] turnInfo = null;
 
   public String getSdpOffer() {
     return sdpOffer;
@@ -66,6 +67,14 @@ public class UserSession {
 
   public void setKmsSessionId(String kmsSessionId) {
     this.kmsSessionId = kmsSessionId;
+  }
+
+  public String[] getTurnInfo() {
+    return turnInfo;
+  }
+
+  public void setTurnInfo(String[] turnInfo) {
+    this.turnInfo = turnInfo;
   }
 
   public void destroy() {

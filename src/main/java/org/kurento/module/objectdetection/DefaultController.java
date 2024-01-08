@@ -45,6 +45,9 @@ public class DefaultController implements ApplicationContextAware {
         log.debug("Incoming message: {}", jsonMessage);
 
         switch (jsonMessage.get("id").getAsString()) {
+            case "initSession":
+                service.initSession(session);
+                break;
             case "initKMSSession":
                 service.initKMSSession(session, jsonMessage);
                 break;

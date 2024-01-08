@@ -2,7 +2,7 @@ let ws = null;
 let webRtcPeer;
 let blinkTimerId = null;
 let heartbeatTimerId = null;
-
+let turnInfo = null;
 window.onload = function () {
     startWs();
 };
@@ -16,6 +16,9 @@ function startWs() {
         var parsedMessage = JSON.parse(message.data);
         console.info("From AP: " + message.data);
         switch (parsedMessage.id) {
+            case "turnInfo":
+                handleTurnInfo(parsedMessage);
+                break;
             case "sdpAnswer":
                 handleSdpAnswer(parsedMessage);
                 break;
@@ -35,6 +38,17 @@ function startWs() {
     ws.onclose = function (ev) {
         ws = null;
     };
+    ws.onopen = function (ev) {
+        sendMessage({ id: "initSession" });
+    };
+}
+
+function handleTurnInfo(parsedMessage) {
+    turnInfo = {
+        server: parsedMessage.turnserver,
+        username: parsedMessage.username,
+        credential: parsedMessage.credential,
+    };
 }
 
 function start() {
@@ -52,6 +66,16 @@ function start() {
         mediaConstraints: {
             video: true,
             audio: false,
+        },
+        configuration: {
+            iceServers: [
+                {
+                    url: "turn:" + turnInfo.server,
+                    username: turnInfo.username,
+                    credential: turnInfo.credential,
+                },
+            ],
+            iceTransportPolicy: "relay",
         },
     };
 

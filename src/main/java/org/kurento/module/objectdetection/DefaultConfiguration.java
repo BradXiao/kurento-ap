@@ -14,12 +14,17 @@ public class DefaultConfiguration {
 
     @Value("${objdet.default.confidence}")
     public float OBJDET_DEFAULT_CONFIDENCE;
-
     @Value("${objdet.default.boxlimit}")
     public int OBJDET_DEFAULT_BOXLIMIT;
-
     @Value("${objdet.default.drawbox}")
     public boolean OBJDET_DEFAULT_DRAWBOX;
+
+    @Value("${turn.internal.sever}")
+    public String TURN_INTERNAL_SREVER;
+    @Value("${turn.server}")
+    public String TURN_SERVER;
+    @Value("${turn.static-auth-secret}")
+    public String TURN_STATIC_AUTH_SECRET;
 
     @Bean
     public KurentoClient kurento() {
