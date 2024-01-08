@@ -10,7 +10,7 @@ window.onload = function () {
 function startWs() {
     //init websocket
     console.log("init");
-    ws = new WebSocket("wss://" + location.host + "/objdet");
+    ws = new WebSocket("wss://" + location.host + location.pathname + "/objdet");
 
     ws.onmessage = function (message) {
         var parsedMessage = JSON.parse(message.data);
