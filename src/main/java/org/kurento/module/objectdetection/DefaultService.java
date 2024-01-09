@@ -86,8 +86,11 @@ public class DefaultService {
 
     public void changeModel(final Session session, JsonObject jsonMessage) {
         UserSession user = users.get(session.getId());
-
-        user.getObjdet().changeModel(jsonMessage.get("newModelName").getAsString());
+        String targetModel = jsonMessage.get("newModelName").getAsString();
+        if (user.getSelectedModel().equals(targetModel)) {
+            return;
+        }
+        user.getObjdet().changeModel(targetModel);
     }
 
     public void onIceCandidate(final Session session, JsonObject jsonMessage) {
@@ -155,7 +158,17 @@ public class DefaultService {
             if (jsonObj.get("state").getAsString().equals("000")) {
                 UserSession user = users.get(session.getId());
                 user.setKmsSessionId(jsonObj.get("sessionId").getAsString());
+                user.setSelectedModel(jsonObj.get("defaultModel").getAsString());
                 startStreaming(session, user.getSdpOffer());
+            }
+        });
+        objDetFilter.addmodelChangedListener(event -> {
+            JsonObject jsonObj = gson.fromJson(event.getChangedInfoJSON(), JsonObject.class);
+            if (jsonObj.get("state").getAsString().equals("000")) {
+                UserSession user = users.get(session.getId());
+                user.setSelectedModel(jsonObj.get("targetModel").getAsString());
+            } else {
+                // todo
             }
         });
 
