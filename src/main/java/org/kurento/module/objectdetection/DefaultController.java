@@ -51,6 +51,12 @@ public class DefaultController implements ApplicationContextAware {
             case "initKMSSession":
                 service.initKMSSession(session, jsonMessage);
                 break;
+            case "getModelNames":
+                service.getModelNames(session);
+                break;
+            case "changeModel":
+                service.changeModel(session, jsonMessage);
+                break;
             case "stop":
                 service.stop(session);
                 this.session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Close"));

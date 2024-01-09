@@ -13,6 +13,7 @@ public class UserSession {
   private String kmsSessionId = "";
   private String sdpOffer = "";
   private String[] turnInfo = null;
+  private String selectedModel = "";
 
   public String getSdpOffer() {
     return sdpOffer;
@@ -75,6 +76,14 @@ public class UserSession {
 
   public void setTurnInfo(String[] turnInfo) {
     this.turnInfo = turnInfo;
+  }
+
+  public String getSelectedModel() {
+    return selectedModel;
+  }
+
+  public void setSelectedModel(String selectedModel) {
+    this.selectedModel = selectedModel;
   }
 
   public void destroy() {

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import jakarta.websocket.Session;
@@ -76,6 +77,17 @@ public class DefaultService {
 
         user.getObjdet().initSession();
 
+    }
+
+    public void getModelNames(final Session session) {
+        UserSession user = users.get(session.getId());
+        user.getObjdet().getModelNames();
+    }
+
+    public void changeModel(final Session session, JsonObject jsonMessage) {
+        UserSession user = users.get(session.getId());
+
+        user.getObjdet().changeModel(jsonMessage.get("newModelName").getAsString());
     }
 
     public void onIceCandidate(final Session session, JsonObject jsonMessage) {
@@ -149,6 +161,14 @@ public class DefaultService {
 
         objDetFilter.adderrorMessageListener(event -> {
             log.error("Error message from KMS, {}", event.getMsgJSON());
+        });
+
+        objDetFilter.addmodelNamesEventListener(event -> {
+            JsonArray jsonObj = gson.fromJson(event.getModelNamesJSON(), JsonArray.class);
+            JsonObject modelNames = new JsonObject();
+            modelNames.addProperty("id", "modelNames");
+            modelNames.add("names", jsonObj);
+            sendMessage(session, modelNames.toString());
         });
 
     }

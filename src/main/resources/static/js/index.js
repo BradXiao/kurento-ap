@@ -3,6 +3,7 @@ let webRtcPeer;
 let blinkTimerId = null;
 let heartbeatTimerId = null;
 let turnInfo = null;
+let selectedModel = null;
 window.onload = function () {
     startWs();
 };
@@ -18,6 +19,9 @@ function startWs() {
         switch (parsedMessage.id) {
             case "turnInfo":
                 handleTurnInfo(parsedMessage);
+                break;
+            case "modelNames":
+                handleModelNames(parsedMessage);
                 break;
             case "sdpAnswer":
                 handleSdpAnswer(parsedMessage);
@@ -52,6 +56,12 @@ function handleTurnInfo(parsedMessage) {
         username: parsedMessage.username,
         credential: parsedMessage.credential,
     };
+}
+
+function handleModelNames(parsedMessage) {
+    //todo
+    selectedModel = parsedMessage["names"][0];
+    sendMessage({ id: "changeModel", newModelName: selectedModel });
 }
 
 function start() {
@@ -122,6 +132,8 @@ function handleConnected() {
         sendMessage({ id: "heartbeat" });
     }, 30000);
     $("video").css("opacity", 1);
+
+    sendMessage({ id: "getModelNames" });
 }
 
 function handleError(error) {
