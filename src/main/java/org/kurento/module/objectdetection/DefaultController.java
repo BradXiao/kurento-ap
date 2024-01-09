@@ -1,6 +1,8 @@
 package org.kurento.module.objectdetection;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +79,14 @@ public class DefaultController implements ApplicationContextAware {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
         this.session = session;
         this.service = DefaultController.applicationContext.getBean(DefaultService.class);
+        try {
+            Field field = session.getClass().getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(session, UUID.randomUUID().toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @OnClose
