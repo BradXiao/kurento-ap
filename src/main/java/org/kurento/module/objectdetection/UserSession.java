@@ -87,8 +87,12 @@ public class UserSession {
   }
 
   public void destroy() {
-    this.objdet.destroy();
-    this.mediaPipeline.release();
+    if (this.objdet != null) {
+      this.objdet.destroy();
+    }
+    if (this.mediaPipeline != null) {
+      this.mediaPipeline.release();
+    }
   }
 
 }

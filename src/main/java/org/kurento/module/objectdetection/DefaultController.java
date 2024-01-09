@@ -81,6 +81,7 @@ public class DefaultController implements ApplicationContextAware {
 
     @OnClose
     public void onClose(CloseReason closeReason) {
+        service.stop(session);
     }
 
     @OnError
