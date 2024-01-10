@@ -1,5 +1,7 @@
 package org.kurento.module.objectdetection;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Base64;
 
 import javax.crypto.Mac;
@@ -33,5 +35,12 @@ public class Utils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String getStackTraceString(final Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString();
     }
 }

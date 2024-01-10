@@ -41,7 +41,7 @@ public class DefaultController implements ApplicationContextAware {
     }
 
     @OnMessage
-    public void onMessage(String message) throws IOException {
+    public void onMessage(String message) {
 
         JsonObject jsonMessage = gson.fromJson(message, JsonObject.class);
         log.debug("Incoming message: {}", jsonMessage);
@@ -61,7 +61,6 @@ public class DefaultController implements ApplicationContextAware {
                 break;
             case "stop":
                 service.stop(session);
-                this.session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Close"));
                 break;
             case "onIceCandidate":
                 service.onIceCandidate(session, jsonMessage);
@@ -70,7 +69,7 @@ public class DefaultController implements ApplicationContextAware {
                 service.heartbeat(session);
                 break;
             default:
-                service.sendError(session, "Invalid message with id " + jsonMessage.get("id").getAsString());
+                service.sendError(session, "E001", "Invalid message with id " + jsonMessage.get("id").getAsString());
                 break;
         }
     }
@@ -86,16 +85,19 @@ public class DefaultController implements ApplicationContextAware {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        log.info("{}: Websocket connection established.", session.getId());
 
     }
 
     @OnClose
     public void onClose(CloseReason closeReason) {
         service.stop(session);
+        log.info("{}: Websocket connection clsoed.", session.getId());
     }
 
     @OnError
     public void onError(Throwable throwable) throws IOException {
         this.session.close(new CloseReason(CloseReason.CloseCodes.UNEXPECTED_CONDITION, throwable.getMessage()));
+        log.error("{}: Websocket connection error. ({})", session.getId(), throwable.getMessage());
     }
 }
