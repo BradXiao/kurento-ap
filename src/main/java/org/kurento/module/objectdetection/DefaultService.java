@@ -170,7 +170,8 @@ public class DefaultService {
                 UserSession user = users.get(session.getId());
                 // test
                 user.getObjdet().startInferring();
-                user.getObjdet().setIsDraw(true);
+                user.getObjdet().setIsDraw(true, true);
+                user.getObjdet().setInferringDelay(500);
             }
         });
 
