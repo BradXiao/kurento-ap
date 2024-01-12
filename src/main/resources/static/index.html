@@ -3,44 +3,171 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Online Streaming: Object Detection Demo</title>
+        <title>Object Detection for Online Streaming</title>
         <meta http-equiv="cache-control" content="no-cache" />
         <meta http-equiv="pragma" content="no-cache" />
         <meta http-equiv="expires" content="0" />
         <link rel="stylesheet" href="webjars/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="webjars/bootstrap-icons/font/bootstrap-icons.min.css" />
+        <link rel="stylesheet" href="css/main.css" />
+        <link rel="stylesheet" href="css/navbar.css" />
         <script src="webjars/jquery/dist/jquery.min.js"></script>
         <script src="webjars/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="js/index.js"></script>
+        <script src="webjars/gsap/dist/gsap.min.js"></script>
+        <script src="webjars/gsap/dist/ScrollToPlugin.min.js"></script>
+        <script src="webjars/gsap/dist/ScrollTrigger.min.js"></script>
+        <script type="module" src="js/index.js"></script>
         <script src="js/kurento-utils.min.js"></script>
     </head>
 
     <body>
-        <div class="container">
-            <div class="row">
-                <div class="col text-center">
-                    <h1>Object Detection Demo</h1>
+        <nav class="navbar-sticky navbar navbar-expand-lg navbar-light bg-light" id="NavBar">
+            <div class="container-fluid">
+                <div class="navbar-height align-items-center" style="display: flex">
+                    <img class="navbar-icon" src="img/object-alignment.png" />
+                    <div>
+                        <a class="navbar-text navbar-height">Online Object Detection</a>
+                    </div>
+                </div>
+                <button
+                    class="navbar-toggler collapsed shadow-none border-0 navbar-btn navbar-height"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="icon-bar top-bar"></span>
+                    <span class="icon-bar middle-bar"></span>
+                    <span class="icon-bar bottom-bar"></span>
+                </button>
+                <div class="collapse navbar-collapse navbar-menu navbar-menu-height" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 navbar-menu-items">
+                        <li class="nav-item">
+                            <b><a class="nav-link active" aria-current="page" href="#title-demo">Demonstration</a></b>
+                        </li>
+                        <li class="nav-item">
+                            <b><a class="nav-link" href="#title-streamserver">Streaming Server</a></b>
+                        </li>
+                        <li class="nav-item">
+                            <b> <a class="nav-link" href="#title-recogmodule">Recognition Module</a></b>
+                        </li>
+                        <li class="nav-item">
+                            <b> <a class="nav-link" href="#title-strmarch">Streaming Architecture</a></b>
+                        </li>
+                        <li class="nav-item">
+                            <b> <a class="nav-link" href="#about">About</a></b>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <div class="row text-center">
-                <div class="col">
-                    <h4>Camera</h4>
-                    <video id="videoInput" autoplay width="480px" height="360px" poster="img/webrtc.png"></video>
+        </nav>
+        <!--blur-->
+        <div id="div-blur"></div>
+        <!--dialog-->
+        <div id="dialog">
+            <div id="dialog-container" class="container">
+                <div id="dialog-top" class="row">
+                    <div class="col-4 dialog-top-icon-div all-grid-center">
+                        <img name="info" class="dialog-icon-1" src="img/information.png" />
+                        <img name="warn" class="dialog-icon-2" src="img/warning-sign.png" />
+                        <img name="error" class="dialog-icon-1" src="img/cross.png" />
+                    </div>
+                    <div class="col dialog-text">
+                        <p id="dialog-text" class="fw-bold no-margin">Loading the data...</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row text-center">
-                <div class="col">
-                    <button class="btn btn-success" id="btnStart" onclick="start();">Start</button>
-                </div>
-                <div class="col">
-                    <button class="btn btn-danger" id="btnStop" onclick="stop();">Stop</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col text-center">
-                    <h4>Stream from server</h4>
-                    <video id="videoOutput" autoplay width="480px" height="360px" poster="img/webrtc.png"></video>
+                <div id="dialog-bottom" class="row">
+                    <div class="col-4"></div>
+                    <div class="col dialog-center"><button class="dialog-button btn btn-success">OK</button></div>
+                    <div class="col dialog-center"><button class="dialog-button btn btn-danger">Cancel</button></div>
                 </div>
             </div>
         </div>
+        <!--loading-->
+        <div id="loading">
+            <div class="container">
+                <div class="row loading-top">
+                    <img class="loading-computer" src="img/computer.png" />
+                    <img class="loading-deliverybox" src="img/delivery-box.png" />
+                    <img class="loading-magnifier" src="img/loupe.png" />
+                    <img class="loading-shelf" src="img/shelf.png" />
+                    <img class="loading-people" src="img/youth.png" />
+                    <img class="loading-computer-loadingbar" src="img/loading-bar.png" />
+                    <img class="loading-computer-shelf" src="img/shelf.png" />
+                    <img class="loading-computer-people" src="img/youth.png" />
+                    <img class="loading-computer-deliverybox" src="img/delivery-box.png" />
+                </div>
+                <div class="row text-center loading-bottom align-items-center">
+                    <p id="loading-text" class="fw-bold no-margin">Loading the data...</p>
+                </div>
+            </div>
+        </div>
+        <!--content-->
+        <div class="mainpage" class="container">
+            <div class="row padding" style="padding-top: 2.5rem"></div>
+
+            <div id="div-demo" class="row text-center">
+                <div class="col">
+                    <h4 class="text-center title-h" id="title-demo">Demonstration</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <video id="videoInput" autoplay width="100%" poster="img/webrtc.png"></video>
+                            <video style="display: none" id="videoOutput" autoplay width="100%" poster="img/webrtc.png"></video>
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col">
+                            <button class="btn btn-success" id="btnStart" onclick="start();">Start</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-danger" id="btnStop" onclick="stop();">Stop</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="div-streamserver" class="row text-center">
+                <div class="col">
+                    <h4 class="text-center title-h" id="title-streamserver">Streaming Server</h4>
+                    <div class="card">
+                        <div class="card-body">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col">
+                    <h4 class="text-center title-h" id="title-recogmodule">Recognition Module</h4>
+                    <div class="card">
+                        <div class="card-body">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="div-strmarch" class="row text-center">
+                <div class="col">
+                    <h4 class="text-center title-h" id="title-strmarch">Streaming Architecture</h4>
+                    <div class="card">
+                        <div class="card-body">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col">
+                    <h4 class="text-center title-h" id="about">About</h4>
+                    <div class="card">
+                        <div class="card-body">
+                </div>
+            </div>
+        </div>
+
+        <footer class="d-flex flex-wrap justify-content-center align-items-center py-3 my-4 border-top text-color-1">
+            <div class="col-md-4 d-flex align-items-center">
+            </div>
+        </footer>
     </body>
 </html>

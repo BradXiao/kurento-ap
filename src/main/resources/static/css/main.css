@@ -1,0 +1,226 @@
+:root {
+    --text-color-1: #ffffff;
+    --title-color-1: #ffd60a;
+}
+
+.mainpage {
+    margin: 0em auto;
+    padding: 0em 0.5em;
+    max-width: 40em;
+}
+
+body {
+    background: #000020;
+    background: -webkit-linear-gradient(to right, #000020, #000060, #000020);
+    background: linear-gradient(to right, #000020, #000060, #000020);
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.title-h {
+    color: var(--title-color-1);
+    border-bottom: solid 1px var(--title-color-1);
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+.text-color-1 {
+    color: var(--text-color-1);
+}
+
+#div-blur {
+    background-color: black;
+    z-index: 1025;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    opacity: 0.7;
+    display: none;
+}
+
+#dialog {
+    background-color: white;
+    position: fixed;
+    width: 80%;
+    z-index: 9999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 30rem;
+    min-height: 30vh;
+    max-height: 60vh;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px 1px black;
+    display: none;
+}
+
+#dialog-container {
+    min-height: 30vh;
+}
+
+#dialog-top {
+    min-height: 21vh;
+}
+
+#dialog-bottom {
+    min-height: 9vh;
+    background-color: #000060;
+    box-shadow: 2px 2px 5px 1px black;
+}
+
+.dialog-center {
+    display: grid;
+    align-content: stretch;
+    padding: 0;
+    margin-right: 20px;
+}
+
+.dialog-button {
+    /* width: 100px; */
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.dialog-icon-1 {
+    display: block;
+    width: 70px;
+}
+
+.dialog-icon-2 {
+    display: block;
+    width: 90px;
+}
+
+@media only screen and (max-width: 300px) {
+    /* mobile*/
+    .dialog-top-icon-div {
+        display: none !important;
+    }
+}
+
+#dialog-text,
+.dialog-text {
+    display: grid;
+    justify-content: start;
+    align-content: center;
+    align-items: center;
+    overflow-wrap: anywhere;
+}
+
+.all-grid-center {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+}
+
+#loading {
+    background-color: white;
+    position: fixed;
+    /* width: 80vw; */
+    /* height: 60vh; */
+    z-index: 9999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    max-height: 200px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px 1px black;
+    display: none;
+    opacity: 0;
+}
+
+.loading-top {
+    width: 250px;
+    height: 125px;
+    position: relative;
+    margin: auto;
+}
+
+.loading-bottom {
+    height: 10vh;
+}
+
+.loading-computer {
+    position: absolute;
+    width: 50%;
+    right: 0%;
+    top: 10%;
+}
+
+.loading-deliverybox {
+    position: absolute;
+    left: 0%;
+    width: 30%;
+    bottom: 8%;
+}
+
+.loading-magnifier {
+    position: absolute;
+    left: 14%;
+    width: 35%;
+    top: 8%;
+    z-index: 10;
+    opacity: 0.9;
+}
+
+.loading-shelf {
+    position: absolute;
+    left: 25%;
+    width: 30%;
+    bottom: 10%;
+}
+
+.loading-people {
+    position: absolute;
+    left: 13%;
+    width: 30%;
+    top: 5%;
+}
+
+.loading-computer-loadingbar {
+    position: absolute;
+    width: 35%;
+    right: 0%;
+    top: 10%;
+    transform: translate(-20%, 5%);
+}
+
+.loading-computer-deliverybox {
+    position: absolute;
+    width: 28%;
+    right: 0%;
+    top: 10%;
+    transform: translate(-35%, 23%);
+}
+
+.loading-computer-shelf {
+    position: absolute;
+    width: 28%;
+    right: 0%;
+    top: 10%;
+    transform: translate(-35%, 23%);
+}
+
+.loading-computer-people {
+    position: absolute;
+    width: 28%;
+    right: 0%;
+    top: 10%;
+    transform: translate(-35%, 23%);
+}
+
+.no-margin {
+    margin: 0;
+}
+
+@media only screen and (max-width: 300px) {
+    /* mobile*/
+
+    .loading-top {
+        display: none;
+    }
+}

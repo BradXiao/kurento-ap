@@ -1,3 +1,5 @@
+import * as utils from "./utils.js";
+import * as ui from "./ui.js";
 let ws = null;
 let webRtcPeer;
 let blinkTimerId = null;
@@ -6,6 +8,7 @@ let turnInfo = null;
 let selectedModel = null;
 window.onload = function () {
     startWs();
+    ui.init();
 };
 
 function startWs() {
