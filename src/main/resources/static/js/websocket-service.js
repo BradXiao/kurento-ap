@@ -51,9 +51,9 @@ export class Service {
         }
     }
 
-    #startStreaming() {
+    async #startStreaming() {
         console.log("start");
-        ui.showLoading("Prepare streaming...");
+        await ui.showLoading("Prepare streaming...");
 
         var options = {
             localVideo: document.getElementById("videoInput"),
@@ -74,7 +74,7 @@ export class Service {
                 iceTransportPolicy: "relay",
             },
         };
-        ui.showLoading("Create streaming...");
+        await ui.showLoading("Create streaming...");
         self.#webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options, function (error) {
             if (error) {
                 self.#handleWebRtcError(error);

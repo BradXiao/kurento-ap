@@ -1,3 +1,4 @@
+import * as utils from "./utils.js";
 let loadingAni = null;
 let dialogIconAni = null;
 let blurFocusAni = null;
@@ -102,7 +103,12 @@ export function init() {
     $("#div-blur").on("click", clickBlur);
 }
 
-export function showLoading(msg = "") {
+export async function showLoading(msg = "") {
+    if ($("#loading").is(":visible")) {
+        $("#loading-text").text(msg);
+        return;
+    }
+
     $("body").css("overflow-y", "hidden");
 
     $("#div-blur").show();
@@ -118,12 +124,15 @@ export function showLoading(msg = "") {
 
     $("#loading-text").text(msg);
     loadingAni.play();
+    await utils.sleep(1000);
 }
 
-export function hideLoading() {
+export async function hideLoading(hideBlur = true) {
     $("body").css("overflow-y", "");
+    if (hideBlur == true) {
+        gsap.fromTo("#div-blur", { opacity: 0.7 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
+    }
 
-    gsap.fromTo("#div-blur", { opacity: 0.7 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
     gsap.fromTo(
         "#loading",
         { opacity: 1, scale: 1 },
@@ -141,6 +150,10 @@ export function showConfirm(msg, okFn = null, cancelFn = null, iconType = null, 
 }
 
 async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType = null, btnOkyesText = null, btnCancelText = null) {
+    if ($("#div-blur").is(":visible") == true) {
+        await hideLoading(false);
+    }
+
     $("#dialog-top").find("img").hide();
     var btns = $("#dialog-bottom").find("button");
     if (ttype === "ok") {
@@ -200,8 +213,11 @@ async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType 
         .show();
     $("body").css("overflow-y", "hidden");
     $("#dialog-text").text(msg);
-    $("#div-blur").show();
-    gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.7, duration: 0.3 });
+    if ($("#div-blur").is(":visible") == false) {
+        $("#div-blur").show();
+        gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.7, duration: 0.3 });
+    }
+
     $("#dialog").show();
     gsap.fromTo(
         "#dialog",
@@ -215,11 +231,6 @@ async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType 
             },
         }
     );
-
-    //hide
-    // $("body").css("overflow-y", "");
-    // gsap.fromTo("#div-blur", { opacity: 0.7 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
-    // gsap.fromTo("#dialog", { opacity: 1, scale: 1 }, { opacity: 0, duration: 0.3, scale: 0.1, onComplete: () => $("#dialog").hide() });
 }
 
 function hideDialog() {
