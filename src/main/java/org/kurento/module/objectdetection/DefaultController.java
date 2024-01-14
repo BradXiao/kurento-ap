@@ -62,6 +62,9 @@ public class DefaultController implements ApplicationContextAware {
             case "stop":
                 service.stop(session);
                 break;
+            case "destroy":
+                service.destroy(session);
+                break;
             case "onIceCandidate":
                 service.onIceCandidate(session, jsonMessage);
                 break;

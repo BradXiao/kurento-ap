@@ -115,6 +115,15 @@ public class DefaultService {
     }
 
     public void stop(Session session) {
+        log.info("{}: stop streaming", session.getId());
+        UserSession user = users.get(session.getId());
+        if (user != null) {
+            user.destroy();
+        }
+
+    }
+
+    public void destroy(Session session) {
         log.info("{}: session is destroyed {}", session.getId(), session.getId());
         UserSession user = users.remove(session.getId());
         if (user != null) {

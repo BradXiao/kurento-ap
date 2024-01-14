@@ -1,7 +1,6 @@
 let loadingAni = null;
 let dialogIconAni = null;
 let blurFocusAni = null;
-
 export function init() {
     $(".third-button").on("click", function () {
         $(".animated-icon3").toggleClass("open");
@@ -139,6 +138,29 @@ export function showMessage(msg, okFn = null, iconType = null) {
 
 export function showConfirm(msg, okFn = null, cancelFn = null, iconType = null) {
     showDialog(msg, "yesno", okFn, cancelFn, iconType);
+}
+
+export function showBlinks() {
+    $("#btnStart").prop("disabled", true);
+    $("#btnStop").prop("disabled", false);
+    return setInterval(() => {
+        if ($("video").eq(0).css("opacity") != 1) {
+            $("video").css("opacity", 1);
+        } else {
+            $("video").css("opacity", 0.5);
+        }
+    }, 300);
+}
+
+export function hideBlinks(blinkTimerId) {
+    $("#btnStart").prop("disabled", false);
+    $("#btnStop").prop("disabled", true);
+    $("video").attr("poster", "img/webrtc.png");
+    $("video").css("opacity", 1);
+    if (blinkTimerId != null) {
+        clearInterval(blinkTimerId);
+        blinkTimerId = null;
+    }
 }
 
 function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType = null) {
