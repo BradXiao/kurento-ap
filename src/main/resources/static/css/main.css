@@ -224,3 +224,7 @@ body {
         display: none;
     }
 }
+
+.demo-menu {
+    margin-top: 1rem;
+}

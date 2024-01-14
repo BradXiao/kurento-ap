@@ -132,12 +132,12 @@ export function hideLoading() {
     loadingAni.pause();
 }
 
-export function showMessage(msg, okFn = null, iconType = null) {
-    showDialog(msg, "ok", okFn, null, iconType);
+export function showMessage(msg, okFn = null, iconType = null, btnText = null) {
+    showDialog(msg, "ok", okFn, null, iconType, btnText, null);
 }
 
-export function showConfirm(msg, okFn = null, cancelFn = null, iconType = null) {
-    showDialog(msg, "yesno", okFn, cancelFn, iconType);
+export function showConfirm(msg, okFn = null, cancelFn = null, iconType = null, btnOkText = null, btnCancelText = null) {
+    showDialog(msg, "yesno", okFn, cancelFn, iconType, null, null, btnOkText, btnCancelText);
 }
 
 export function showBlinks() {
@@ -163,14 +163,15 @@ export function hideBlinks(blinkTimerId) {
     }
 }
 
-function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType = null) {
+async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType = null, btnOkyesText = null, btnCancelText = null) {
     $("#dialog-top").find("img").hide();
+    var btns = $("#dialog-bottom").find("button");
     if (ttype === "ok") {
-        var btns = $("#dialog-bottom").find("button");
+        btnOkyesText = btnOkyesText === null ? "OK" : btnOkyesText;
         $(btns[0]).hide();
         $(btns[1])
             .show()
-            .text("OK")
+            .text(btnOkyesText)
             .removeClass("btn-danger")
             .addClass("btn-success")
             .off("click")
@@ -184,8 +185,11 @@ function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType = null
             iconType = "info";
         }
     } else if (ttype === "yesno") {
+        btnOkyesText = btnOkyesText === null ? "OK" : btnOkyesText;
+        btnCancelText = btnCancelText === null ? "Cancel" : btnCancelText;
         $(btns[0])
             .show()
+            .text(btnOkyesText)
             .off("click")
             .on("click", function () {
                 hideDialog();
@@ -195,7 +199,7 @@ function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType = null
             });
         $(btns[1])
             .show()
-            .text("Cancel")
+            .text(btnCancelText)
             .removeClass("btn-success")
             .addClass("btn-danger")
             .off("click")

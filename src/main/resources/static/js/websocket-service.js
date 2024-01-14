@@ -17,8 +17,13 @@ export class Service {
     constructor(ws) {
         self = this;
         this.#ws = ws;
-        $("#btnStart").on("click", self.start);
-        $("#btnStop").on("click", self.stop);
+        this.#initComponents();
+    }
+
+    #initComponents() {
+        //// btns
+        $("#btnStartPause").on("click", self.#startPauseStreaming);
+        $("#btnStop").on("click", self.#stopStreaming).prop("disabled", true);
     }
 
     handleTurnInfo(parsedMessage) {
@@ -35,9 +40,23 @@ export class Service {
         self.sendMessage({ id: "changeModel", newModelName: self.#selectedModel });
     }
 
-    start() {
+    #startPauseStreaming() {
+        if ($("#btnStartPause").text() === "Start") {
+            self.#startStreaming();
+        } else if ($("#btnStartPause").text() === "Pause") {
+            self.#pauseStreaming();
+        } else if ($("#btnStartPause").text() === "Resume") {
+            self.#resumeStreaming();
+        } else {
+            console.error("unknown command");
+        }
+    }
+
+    #startStreaming() {
         console.log("start");
         self.#blinkTimerId = ui.showBlinks();
+        ui.showLoading("Prepare streaming...");
+
         var options = {
             localVideo: document.getElementById("videoInput"),
             remoteVideo: document.getElementById("videoOutput"),
@@ -57,7 +76,7 @@ export class Service {
                 iceTransportPolicy: "relay",
             },
         };
-
+        ui.showLoading("Create streaming...");
         self.#webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options, function (error) {
             if (error) {
                 return console.error(error);
@@ -69,12 +88,27 @@ export class Service {
                     return;
                 }
 
+                ui.showLoading("Create recognition session...");
                 self.sendMessage({ id: "initKMSSession", sdpOffer: offerSdp });
             });
         });
     }
 
-    stop() {
+    #pauseStreaming() {
+        $("#videoInput")[0]
+            .srcObject.getTracks()
+            .forEach((t) => (t.enabled = !t.enabled));
+        $("#btnStartPause").text("Resume");
+    }
+
+    #resumeStreaming() {
+        $("#videoInput")[0]
+            .srcObject.getTracks()
+            .forEach((t) => (t.enabled = !t.enabled));
+        $("#btnStartPause").text("Pause");
+    }
+
+    #stopStreaming() {
         console.log("stop");
         ui.hideBlinks(self.#blinkTimerId);
         if (self.#webRtcPeer) {
@@ -86,6 +120,8 @@ export class Service {
         if (self.#heartbeatTimerId != null) {
             clearInterval(self.#heartbeatTimerId);
         }
+
+        $("#btnStartPause").text("Start");
     }
 
     handleConnected() {
@@ -100,6 +136,10 @@ export class Service {
         $("video").css("opacity", 1);
 
         self.sendMessage({ id: "getModelNames" });
+
+        $("#btnStartPause").text("Pause");
+        $("#btnStop").prop("disabled", false);
+        ui.hideLoading();
     }
 
     handleError(error) {
