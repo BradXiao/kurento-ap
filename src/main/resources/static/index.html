@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="webjars/bootstrap-icons/font/bootstrap-icons.min.css" />
         <link rel="stylesheet" href="css/main.css" />
         <link rel="stylesheet" href="css/navbar.css" />
+        <link rel="stylesheet" href="css/loadingAni.css" />
         <script src="webjars/jquery/dist/jquery.min.js"></script>
         <script src="webjars/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="webjars/gsap/dist/gsap.min.js"></script>
@@ -88,16 +89,15 @@
         <!--loading-->
         <div id="loading">
             <div class="container">
-                <div class="row loading-top">
-                    <img class="loading-computer" src="img/computer.png" />
-                    <img class="loading-deliverybox" src="img/delivery-box.png" />
-                    <img class="loading-magnifier" src="img/loupe.png" />
-                    <img class="loading-shelf" src="img/shelf.png" />
-                    <img class="loading-people" src="img/youth.png" />
-                    <img class="loading-computer-loadingbar" src="img/loading-bar.png" />
-                    <img class="loading-computer-shelf" src="img/shelf.png" />
-                    <img class="loading-computer-people" src="img/youth.png" />
-                    <img class="loading-computer-deliverybox" src="img/delivery-box.png" />
+                <div class="row loading-top align-items-center justify-content-center">
+                    <div class="sk-chase">
+                        <div class="sk-chase-dot"></div>
+                        <div class="sk-chase-dot"></div>
+                        <div class="sk-chase-dot"></div>
+                        <div class="sk-chase-dot"></div>
+                        <div class="sk-chase-dot"></div>
+                        <div class="sk-chase-dot"></div>
+                    </div>
                 </div>
                 <div class="row text-center loading-bottom align-items-center">
                     <p id="loading-text" class="fw-bold no-margin">Loading the data...</p>

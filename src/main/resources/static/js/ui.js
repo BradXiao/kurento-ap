@@ -1,5 +1,4 @@
 import * as utils from "./utils.js";
-let loadingAni = null;
 let dialogIconAni = null;
 let blurFocusAni = null;
 export function init() {
@@ -48,36 +47,6 @@ export function init() {
                 revealTimeline.fromTo(this, { y: 70, opacity: 0.1 }, { y: 0, opacity: 1, duration: 0.9, ease: "power4.out" });
             });
     });
-    ////loading ani
-    var tl = gsap.timeline({ repeat: -1 }); // Infinite repeat
-
-    // detect people
-    addAnimationGlance(tl, ".loading-computer-loadingbar", 0.25, 0, 0.1, undefined);
-    addAnimationGlance(tl, ".loading-computer-people", 0.25, 0, 0.25, undefined);
-    // moving to shelf
-    tl.fromTo(".loading-magnifier", { left: "14%", top: "8%" }, { duration: 0.25, left: "25%", top: "50%", ease: "power1.inOut" });
-    addAnimationBlink(tl, ".loading-computer-loadingbar", 0.25, 0, 0.1, "<");
-    addAnimationGlance(tl, ".loading-computer-shelf", 0.25, 0, 0.25, undefined);
-    // moving to box
-    tl.to(".loading-magnifier", { duration: 0.25, left: "1%", top: "50%", ease: "power1.inOut" });
-
-    addAnimationBlink(tl, ".loading-computer-loadingbar", 0.25, 0, 0.1, "<");
-    addAnimationGlance(tl, ".loading-computer-deliverybox", 0.25, 0, 0.25, undefined);
-    // moving to people
-    tl.to(
-        ".loading-magnifier",
-        {
-            duration: 0.25,
-            left: "14%",
-            top: "8%",
-            ease: "power1.inOut",
-        },
-        "<"
-    );
-    addAnimationGlance(tl, ".loading-computer-loadingbar", 0.25, 0, 0.1, "<");
-
-    loadingAni = tl;
-    loadingAni.pause();
 
     ////dialog icon ani
     dialogIconAni = gsap.timeline({ repeat: -1 });
@@ -126,7 +95,6 @@ export async function showLoading(msg = "") {
     $(".loading-computer-shelf").css("opacity", "0");
 
     $("#loading-text").text(msg);
-    loadingAni.play();
     await utils.sleep(1000);
 }
 
@@ -141,7 +109,6 @@ export async function hideLoading(hideBlur = true) {
         { opacity: 1, scale: 1 },
         { opacity: 0, duration: 0.3, scale: 0.1, onComplete: () => $("#loading").hide() }
     );
-    loadingAni.pause();
 }
 
 export function showMessage(msg, okFn = null, iconType = null, btnText = null) {
