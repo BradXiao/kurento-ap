@@ -30,6 +30,9 @@ export class Service {
                 ui.showSettings();
             })
             .prop("disabled", true);
+        $("#btnHelp").on("click", function () {
+            ui.showMessage("This function is still developing.");
+        });
         if (self.#streamingMode === 1) {
             $("#videoInput").hide();
             $("#videoOutput").show();
