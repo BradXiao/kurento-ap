@@ -140,29 +140,6 @@ export function showConfirm(msg, okFn = null, cancelFn = null, iconType = null, 
     showDialog(msg, "yesno", okFn, cancelFn, iconType, null, null, btnOkText, btnCancelText);
 }
 
-export function showBlinks() {
-    $("#btnStart").prop("disabled", true);
-    $("#btnStop").prop("disabled", false);
-    return setInterval(() => {
-        if ($("video").eq(0).css("opacity") != 1) {
-            $("video").css("opacity", 1);
-        } else {
-            $("video").css("opacity", 0.5);
-        }
-    }, 300);
-}
-
-export function hideBlinks(blinkTimerId) {
-    $("#btnStart").prop("disabled", false);
-    $("#btnStop").prop("disabled", true);
-    $("video").attr("poster", "img/webrtc.png");
-    $("video").css("opacity", 1);
-    if (blinkTimerId != null) {
-        clearInterval(blinkTimerId);
-        blinkTimerId = null;
-    }
-}
-
 async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType = null, btnOkyesText = null, btnCancelText = null) {
     $("#dialog-top").find("img").hide();
     var btns = $("#dialog-bottom").find("button");

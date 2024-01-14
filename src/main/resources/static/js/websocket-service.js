@@ -9,7 +9,6 @@ export class Service {
     /**@type {WebSocket} */
     #ws = null;
     #webRtcPeer = null;
-    #blinkTimerId = null;
     #heartbeatTimerId = null;
     #turnInfo = null;
     #selectedModel = null;
@@ -54,7 +53,6 @@ export class Service {
 
     #startStreaming() {
         console.log("start");
-        self.#blinkTimerId = ui.showBlinks();
         ui.showLoading("Prepare streaming...");
 
         var options = {
@@ -110,7 +108,6 @@ export class Service {
 
     #stopStreaming() {
         console.log("stop");
-        ui.hideBlinks(self.#blinkTimerId);
         if (self.#webRtcPeer) {
             self.#webRtcPeer.dispose();
             self.#webRtcPeer = null;
@@ -125,11 +122,6 @@ export class Service {
     }
 
     handleConnected() {
-        if (self.#blinkTimerId != null) {
-            clearInterval(self.#blinkTimerId);
-            self.#blinkTimerId = null;
-        }
-
         self.#heartbeatTimerId = setInterval(() => {
             self.sendMessage({ id: "heartbeat" });
         }, 30000);
