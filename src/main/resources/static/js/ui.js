@@ -94,13 +94,16 @@ export function init() {
 
     ////blur focus ani
     blurFocusAni = gsap.timeline({ repeat: 1 });
-    $("div[id=loading], div[id=dialog]").each(function () {
-        blurFocusAni.to(this, { scale: 1.1, duration: 0.05 }).to(this, { scale: 1, duration: 0.05 });
+    $("div[id=loading], div[id=dialog], div[id=settings]").each(function () {
+        blurFocusAni.to(this, { scale: 1.1, duration: 0.05 }, 0).to(this, { scale: 1, duration: 0.05 });
     });
 
     blurFocusAni.pause();
 
     $("#div-blur").on("click", clickBlur);
+
+    ////others
+    initStsRange();
 }
 
 export async function showLoading(msg = "") {
@@ -128,8 +131,8 @@ export async function showLoading(msg = "") {
 }
 
 export async function hideLoading(hideBlur = true) {
-    $("body").css("overflow-y", "");
     if (hideBlur == true) {
+        $("body").css("overflow-y", "");
         gsap.fromTo("#div-blur", { opacity: 0.7 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
     }
 
@@ -147,6 +150,38 @@ export function showMessage(msg, okFn = null, iconType = null, btnText = null) {
 
 export function showConfirm(msg, okFn = null, cancelFn = null, iconType = null, btnOkText = null, btnCancelText = null) {
     showDialog(msg, "yesno", okFn, cancelFn, iconType, null, null, btnOkText, btnCancelText);
+}
+
+export function showSettings() {
+    $("#div-blur").show();
+    gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.7, duration: 0.3 });
+    $("#settings").show();
+    $("body").css("overflow-y", "hidden");
+    gsap.fromTo(
+        "#settings",
+        { opacity: 0.0, scale: 0.1 },
+        {
+            opacity: 1,
+            duration: 0.3,
+            scale: 1,
+            onComplete: function () {
+                gsap.set("#settings", { clearProps: "transform" });
+            },
+        }
+    );
+}
+
+export function hideSettings() {
+    $("body").css("overflow-y", "");
+    if ($("div[id=loading]:visible, div[id=dialog]:visible").length == 0) {
+        gsap.fromTo("#div-blur", { opacity: 0.7 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
+    }
+
+    gsap.fromTo(
+        "#settings",
+        { opacity: 1, scale: 1 },
+        { opacity: 0, duration: 0.3, scale: 0.1, onComplete: () => $("#settings").hide() }
+    );
 }
 
 async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType = null, btnOkyesText = null, btnCancelText = null) {
@@ -251,6 +286,22 @@ export function setStrmOverlay(ttype) {
         $(".video-overlay-div").hide();
     } else {
         console.error("unknown strm overlay");
+    }
+}
+
+function initStsRange() {
+    var ranges = $("#settings > form > div:has(input[type=range])");
+    var texts = ["Object confidence threshold: ", "Box limit: ", "Inference delay btw. frames (ms): "];
+    for (var i = 0; i < ranges.length; i += 1) {
+        ranges
+            .eq(i)
+            .find("input")
+            .attr("data-title", texts[i])
+            .on("input", function () {
+                $(this)
+                    .siblings()
+                    .text($(this).attr("data-title") + $(this).val());
+            });
     }
 }
 

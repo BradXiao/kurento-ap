@@ -59,6 +59,30 @@ public class DefaultController implements ApplicationContextAware {
             case "changeModel":
                 service.changeModel(session, jsonMessage);
                 break;
+            case "setConfi":
+                service.setConfi(session, jsonMessage);
+                break;
+            case "setBoxLimit":
+                service.setBoxLimit(session, jsonMessage);
+                break;
+            case "setInferring":
+                service.setInferring(session, jsonMessage);
+                break;
+            case "setInferringDelay":
+                service.setInferringDelay(session, jsonMessage);
+                break;
+            case "setDrawing":
+                service.setDrawing(session, jsonMessage);
+                break;
+            case "setRelay":
+                service.setRelay(session, jsonMessage);
+                break;
+            case "getSettings":
+                service.getSettings(session);
+                break;
+            case "setDspMode":
+                service.setDspMode(session, jsonMessage);
+                break;
             case "stop":
                 service.stop(session);
                 break;

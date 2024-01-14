@@ -12,6 +12,7 @@ export class Service {
     #heartbeatTimerId = null;
     #turnInfo = null;
     #selectedModel = null;
+    #streamingMode = 1;
     #isInferring = false;
 
     constructor(ws) {
@@ -24,6 +25,26 @@ export class Service {
         //// btns
         $("#btnStartPause").on("click", self.#startPauseStreaming);
         $("#btnStop").on("click", self.#stopStreaming).prop("disabled", true);
+        $("#btnSettings")
+            .on("click", function () {
+                ui.showSettings();
+            })
+            .prop("disabled", true);
+        if (self.#streamingMode === 1) {
+            $("#videoInput").hide();
+            $("#videoOutput").show();
+        }
+
+        $("#btnStsApply").on("click", async function () {
+            ui.showLoading("Apply new settings...");
+            ui.hideSettings();
+            self.#applySettings();
+        });
+
+        $("#btnStsCancel").on("click", function () {
+            ui.hideSettings();
+            self.sendMessage({ id: "getSettings" });
+        });
     }
 
     handleTurnInfo(parsedMessage) {
@@ -35,9 +56,15 @@ export class Service {
     }
 
     handleModelNames(parsedMessage) {
-        //todo
-        self.#selectedModel = parsedMessage["names"][0];
-        self.sendMessage({ id: "changeModel", newModelName: self.#selectedModel });
+        var models = parsedMessage["names"];
+        $("#selModel").empty();
+        for (var i = 0; i < models.length; i += 1) {
+            var newOption = $("<option>", {
+                value: models[i],
+                text: models[i],
+            });
+            $("#selModel").append(newOption);
+        }
     }
 
     #startPauseStreaming() {
@@ -92,6 +119,7 @@ export class Service {
                 self.sendMessage({ id: "initKMSSession", sdpOffer: offerSdp });
             });
         });
+        $("#btnSettings").prop("disabled", false);
     }
 
     #pauseStreaming() {
@@ -129,21 +157,47 @@ export class Service {
         $("#btnStartPause").text("Start");
         $("#btnStop").prop("disabled", true);
         ui.setStrmOverlay("stop");
+        $("#btnSettings").prop("disabled", true);
     }
 
-    handleConnected() {
+    async handleConnected() {
+        ui.showLoading("Preparing recognition core...");
         self.#heartbeatTimerId = setInterval(() => {
             self.sendMessage({ id: "heartbeat" });
         }, 30000);
         $("video").css("opacity", 1);
 
         self.sendMessage({ id: "getModelNames" });
+        if (self.#streamingMode === 1) {
+            $("#videoInput").hide();
+            $("#videoOutput").show();
+        } else if (self.#streamingMode === 2) {
+        }
 
         $("#btnStartPause").text("Pause");
         $("#btnStop").prop("disabled", false);
-        ui.hideLoading();
+        self.sendMessage({ id: "setInferring", sw: "true" });
+        self.sendMessage({ id: "setInferringDelay", delayMs: 500 });
+        self.sendMessage({ id: "setDrawing", sw: "true" });
         self.#isInferring = true;
         ui.setStrmOverlay("recog");
+        self.sendMessage({ id: "getSettings" });
+    }
+
+    async handleSettings(parsedMessage) {
+        $("#rangeConfi").val(parsedMessage.confi).trigger("input");
+        $("#rangeBoxLmt").val(parsedMessage.boxLimit).trigger("input");
+        $("#rangeInferDly").val(parsedMessage.inferringDelay).trigger("input");
+        $("#swDspBoxes").prop("checked", parsedMessage.isDrawing === "true" ? true : false);
+        $("#selModel").val(parsedMessage.model);
+        $("#selRelay").val(parsedMessage.relay);
+        $("#selDisplayMode").val(parsedMessage.dspMode);
+        $("#rangeConfi").val(parsedMessage.confi);
+
+        await utils.sleep(1000);
+        if ($("#settings").is(":visible") !== true) {
+            ui.hideLoading();
+        }
     }
 
     handleError(error) {
@@ -192,6 +246,17 @@ export class Service {
         if (self.#heartbeatTimerId != null) {
             clearInterval(self.#heartbeatTimerId);
         }
+    }
+
+    #applySettings() {
+        self.sendMessage({ id: "setConfi", confi: $("#rangeConfi").val() });
+        self.sendMessage({ id: "setBoxLimit", maxNum: $("#rangeBoxLmt").val() });
+        self.sendMessage({ id: "setInferringDelay", delayMs: $("#rangeInferDly").val() });
+        self.sendMessage({ id: "setDrawing", sw: $("#swDspBoxes").is(":checked") });
+        self.sendMessage({ id: "changeModel", newModelName: $("#selModel").val() });
+        self.sendMessage({ id: "setRelay", name: $("#selRelay").val() });
+        self.sendMessage({ id: "setDspMode", mode: $("#selDisplayMode").val() });
+        self.sendMessage({ id: "getSettings" });
     }
 
     #handleWebRtcError(error) {

@@ -104,6 +104,51 @@
                 </div>
             </div>
         </div>
+        <!--settings-->
+        <div id="settings">
+            <form class="form-dialog">
+                <div class="row form-div">
+                    <label for="rangeConfi" class="form-label form-label">Object confidence threshold</label>
+                    <input type="range" class="form-range" min="0.05" max="0.95" step="0.05" id="rangeConfi" />
+                </div>
+                <div class="row form-div">
+                    <label for="rangeBoxLmt" class="form-label form-label">Box limit</label>
+                    <input type="range" class="form-range" min="1" max="100" step="1" id="rangeBoxLmt" />
+                </div>
+                <div class="row form-div">
+                    <label for="rangeInferDly" class="form-label form-label">Inference delay btw. frames (ms)</label>
+                    <input type="range" class="form-range" min="100" max="2000" step="100" id="rangeInferDly" />
+                </div>
+                <div class="form-check form-switch form-div">
+                    <input class="form-check-input" type="checkbox" role="switch" id="swDspBoxes" />
+                    <label class="form-check-label form-label" for="swDspBoxes">Display detected boxes</label>
+                </div>
+                <div class="row form-div">
+                    <label for="selModel" class="form-label form-label">Inference model</label>
+                    <select id="selModel" class="form-select" aria-label="Default select example"></select>
+                </div>
+                <div class="row form-div">
+                    <label for="selRelay" class="form-label form-label">Streaming relay server</label>
+                    <select id="selRelay" class="form-select" aria-label="Default select example">
+                        <option value="default">Default</option>
+                        <option value="GCP" disabled>GCP (under construction)</option>
+                    </select>
+                </div>
+
+                <div class="row form-div">
+                    <label for="selDisplayMode" class="form-label form-label">Processed frames display mode</label>
+                    <select id="selDisplayMode" class="form-select" aria-label="Default select example">
+                        <option value="remote" selected>Remote</option>
+                        <option value="local" disabled>Local</option>
+                    </select>
+                </div>
+                <div class="row form-div">
+                    <div class="col-4"></div>
+                    <div class="col sts-btn-div"><button type="button" class="btn btn-success" id="btnStsApply">Apply</button></div>
+                    <div class="col sts-btn-div"><button type="button" class="btn btn-danger" id="btnStsCancel">Cancel</button></div>
+                </div>
+            </form>
+        </div>
         <!--content-->
         <div class="mainpage" class="container">
             <div class="row padding" style="padding-top: 2.5rem"></div>
@@ -129,6 +174,7 @@
                         </div>
                         <div class="col">
                             <button class="btn btn-danger" id="btnStop">Stop</button>
+                            <button class="btn btn-primary btn-sm" id="btnSettings"><i class="bi bi-gear-fill"></i></button>
                         </div>
                     </div>
                 </div>

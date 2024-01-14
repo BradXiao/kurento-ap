@@ -15,6 +15,14 @@ public class UserSession {
   private String[] turnInfo = null;
   private String selectedModel = "";
 
+  // streaming parameters
+  private float inferringConfi = 0.7F;
+  private int boxLimit = 10;
+  private int inferringDelay = 100;
+  private boolean isDrawing = true;
+  private String relayServer = "default";
+  private String displayMode = "remote";
+
   public String getSdpOffer() {
     return sdpOffer;
   }
@@ -86,6 +94,54 @@ public class UserSession {
     this.selectedModel = selectedModel;
   }
 
+  public String getRelayServer() {
+    return relayServer;
+  }
+
+  public void setRelayServer(String relayServer) {
+    this.relayServer = relayServer;
+  }
+
+  public String getDisplayMode() {
+    return displayMode;
+  }
+
+  public void setDisplayMode(String displayMode) {
+    this.displayMode = displayMode;
+  }
+
+  public int getInferringDelay() {
+    return inferringDelay;
+  }
+
+  public void setInferringDelay(int inferringDelay) {
+    this.inferringDelay = inferringDelay;
+  }
+
+  public int getBoxLimit() {
+    return boxLimit;
+  }
+
+  public void setBoxLimit(int boxLimit) {
+    this.boxLimit = boxLimit;
+  }
+
+  public float getInferringConfi() {
+    return inferringConfi;
+  }
+
+  public void setInferringConfi(float inferringConfi) {
+    this.inferringConfi = inferringConfi;
+  }
+
+  public boolean isDrawing() {
+    return isDrawing;
+  }
+
+  public void setDrawing(boolean isDrawing) {
+    this.isDrawing = isDrawing;
+  }
+
   public void destroy() {
     if (this.objdet != null) {
       this.objdet.destroy();
@@ -93,6 +149,12 @@ public class UserSession {
     if (this.mediaPipeline != null) {
       this.mediaPipeline.release();
     }
+    if (this.webRtcEndpoint != null) {
+      this.webRtcEndpoint.release();
+    }
   }
 
+  public void stopStrm() {
+    destroy();
+  }
 }

@@ -96,6 +96,118 @@ public class DefaultService {
         }
         log.debug("{}: trigger KMS to change model to {}", session.getId(), targetModel);
         user.getObjdet().changeModel(targetModel);
+        user.setSelectedModel(targetModel);
+    }
+
+    public void setBoxLimit(final Session session, JsonObject jsonMessage) {
+        log.info("{}: set box limit", session.getId());
+        UserSession user = users.get(session.getId());
+        int maxNum = jsonMessage.get("maxNum").getAsInt();
+        if (maxNum <= 0 || maxNum > 100) {
+            log.error("{}: invalid box limit number {}", session.getId(), maxNum);
+            return;
+        }
+        user.getObjdet().setBoxLimit(maxNum);
+        user.setBoxLimit(maxNum);
+        log.debug("{}: signal box limit number {} to KMS", session.getId(), maxNum);
+
+    }
+
+    public void setConfi(final Session session, JsonObject jsonMessage) {
+        log.info("{}: set box confidence", session.getId());
+        UserSession user = users.get(session.getId());
+        float confi = jsonMessage.get("confi").getAsFloat();
+        if (confi <= 0 || confi > 1) {
+            log.error("{}: invalid box confidence number {}", session.getId(), confi);
+            return;
+        }
+        user.setInferringConfi(confi);
+        user.getObjdet().setConfidence(confi);
+        log.debug("{}: signal box confidence {} to KMS", session.getId(), confi);
+
+    }
+
+    public void setInferring(final Session session, JsonObject jsonMessage) {
+        log.info("{}: set inferring", session.getId());
+        UserSession user = users.get(session.getId());
+        if (jsonMessage.get("sw").getAsString().equals("true")) {
+            user.getObjdet().startInferring();
+            log.debug("{}: signal start inferring to KMS", session.getId());
+        } else {
+            user.getObjdet().stopInferring();
+            log.debug("{}: signal stop inferring to KMS", session.getId());
+        }
+    }
+
+    public void setInferringDelay(final Session session, JsonObject jsonMessage) {
+        log.info("{}: set inferring delay", session.getId());
+        UserSession user = users.get(session.getId());
+        int delayMs = jsonMessage.get("delayMs").getAsInt();
+        if (delayMs < 100 || delayMs > 2000) {
+            log.error("{}: invalid box inferring delay {} ms", session.getId(), delayMs);
+            return;
+        }
+        user.getObjdet().setInferringDelay(delayMs);
+        user.setInferringDelay(delayMs);
+        log.debug("{}: signal inferring delay {} ms to KMS", session.getId(), delayMs);
+    }
+
+    public void setDrawing(final Session session, JsonObject jsonMessage) {
+        log.info("{}: set drawing", session.getId());
+        UserSession user = users.get(session.getId());
+        if (jsonMessage.get("sw").getAsString().equals("true")) {
+            user.getObjdet().setIsDraw(true, true);
+            user.setDrawing(true);
+            log.debug("{}: signal enable drawing to KMS", session.getId());
+        } else {
+            user.getObjdet().setIsDraw(false, true);
+            user.setDrawing(false);
+            log.debug("{}: signal disable drawing to KMS", session.getId());
+        }
+
+    }
+
+    public void setRelay(final Session session, JsonObject jsonMessage) {
+        log.info("{}: set relay server", session.getId());
+        UserSession user = users.get(session.getId());
+        String relayName = jsonMessage.get("name").getAsString();
+        if (relayName.equals("defaut")) {
+            user.setRelayServer(relayName);
+            log.debug("{}: relay server {}", session.getId(), relayName);
+        } else {
+            log.error("{}: invalid relay server name {}", session.getId(), relayName);
+        }
+
+    }
+
+    public void setDspMode(final Session session, JsonObject jsonMessage) {
+        log.info("{}: set display mode", session.getId());
+        UserSession user = users.get(session.getId());
+        String mode = jsonMessage.get("mode").getAsString();
+        if (mode.equals("remote")) {
+            user.setDisplayMode(mode);
+            log.debug("{}: set display mode {}", session.getId(), mode);
+        } else {
+            log.error("{}: invalid display mode {}", session.getId(), mode);
+        }
+
+    }
+
+    public void getSettings(final Session session) {
+        log.info("{}: get settings", session.getId());
+
+        UserSession user = users.get(session.getId());
+        JsonObject settings = new JsonObject();
+        settings.addProperty("id", "settings");
+        settings.addProperty("confi", user.getInferringConfi());
+        settings.addProperty("boxLimit", user.getBoxLimit());
+        settings.addProperty("inferringDelay", user.getInferringDelay());
+        settings.addProperty("isDrawing", user.isDrawing() ? "true" : "false");
+        settings.addProperty("model", user.getSelectedModel());
+        settings.addProperty("relay", user.getRelayServer());
+        settings.addProperty("dspMode", user.getDisplayMode());
+        sendMessage(session, settings.toString());
+        log.debug("{}: settings = {}", session.getId(), settings.toString());
     }
 
     public void onIceCandidate(final Session session, JsonObject jsonMessage) {
@@ -176,11 +288,6 @@ public class DefaultService {
             log.info("{}: state changed to {}", session.getId(), event.getNewState());
             if (event.getNewState().toString().equals("CONNECTED")) {
                 sendMessage(session, "{\"id\":\"connected\"}");
-                UserSession user = users.get(session.getId());
-                // test
-                user.getObjdet().startInferring();
-                user.getObjdet().setIsDraw(true, true);
-                user.getObjdet().setInferringDelay(500);
             }
         });
 

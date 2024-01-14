@@ -43,6 +43,9 @@ export class Controller {
             case "connected":
                 self.#service.handleConnected();
                 break;
+            case "settings":
+                self.#service.handleSettings(parsedMessage);
+                break;
             case "error":
                 self.#service.handleError(parsedMessage.message);
                 self.destroy();
