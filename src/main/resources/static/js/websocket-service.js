@@ -12,6 +12,7 @@ export class Service {
     #heartbeatTimerId = null;
     #turnInfo = null;
     #selectedModel = null;
+    #isInferring = false;
 
     constructor(ws) {
         self = this;
@@ -98,6 +99,7 @@ export class Service {
             .srcObject.getTracks()
             .forEach((t) => (t.enabled = !t.enabled));
         $("#btnStartPause").text("Resume");
+        ui.setStrmOverlay("pause");
     }
 
     #resumeStreaming() {
@@ -105,6 +107,11 @@ export class Service {
             .srcObject.getTracks()
             .forEach((t) => (t.enabled = !t.enabled));
         $("#btnStartPause").text("Pause");
+        if (self.#isInferring === true) {
+            ui.setStrmOverlay("recog");
+        } else {
+            ui.setStrmOverlay("strm");
+        }
     }
 
     #stopStreaming() {
@@ -120,6 +127,8 @@ export class Service {
         }
 
         $("#btnStartPause").text("Start");
+        $("#btnStop").prop("disabled", true);
+        ui.setStrmOverlay("stop");
     }
 
     handleConnected() {
@@ -133,6 +142,8 @@ export class Service {
         $("#btnStartPause").text("Pause");
         $("#btnStop").prop("disabled", false);
         ui.hideLoading();
+        self.#isInferring = true;
+        ui.setStrmOverlay("recog");
     }
 
     handleError(error) {

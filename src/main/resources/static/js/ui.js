@@ -233,6 +233,27 @@ async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType 
     );
 }
 
+export function setStrmOverlay(ttype) {
+    $(".video-overlay-div > img").hide();
+    if (ttype === "strm") {
+        $(".video-overlay-div").show();
+        $(".video-overlay-div > img[name=strm]").show();
+        $(".video-overlay-div > span").text("Streaming").css("color", "#FFFA00");
+    } else if (ttype === "recog") {
+        $(".video-overlay-div").show();
+        $(".video-overlay-div > img[name=recog]").show();
+        $(".video-overlay-div > span").text("Recognizing").css("color", "#58D100");
+    } else if (ttype === "pause") {
+        $(".video-overlay-div").show();
+        $(".video-overlay-div > img[name=pause]").show();
+        $(".video-overlay-div > span").text("Paused").css("color", "#C40000");
+    } else if (ttype === "stop") {
+        $(".video-overlay-div").hide();
+    } else {
+        console.error("unknown strm overlay");
+    }
+}
+
 function hideDialog() {
     $("body").css("overflow-y", "");
     gsap.fromTo("#div-blur", { opacity: 0.7 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });

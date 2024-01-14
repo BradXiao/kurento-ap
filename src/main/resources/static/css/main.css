@@ -228,3 +228,14 @@ body {
 .demo-menu {
     margin-top: 1rem;
 }
+
+.video-overlay-div {
+    position: absolute;
+    height: 1rem;
+    display: none;
+    padding-left: 1rem;
+}
+
+.video-overlay-img {
+    height: 100%;
+}
