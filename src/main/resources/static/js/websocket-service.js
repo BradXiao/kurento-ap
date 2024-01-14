@@ -77,7 +77,8 @@ export class Service {
         ui.showLoading("Create streaming...");
         self.#webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options, function (error) {
             if (error) {
-                return console.error(error);
+                self.#handleWebRtcError(error);
+                return;
             }
 
             self.#webRtcPeer.generateOffer((error, offerSdp) => {
@@ -180,5 +181,34 @@ export class Service {
         if (self.#heartbeatTimerId != null) {
             clearInterval(self.#heartbeatTimerId);
         }
+    }
+
+    #handleWebRtcError(error) {
+        var msg = "";
+        switch (error.name) {
+            case "NotFoundError":
+            case "DevicesNotFoundError":
+                msg = "There is no webcam found on your device!";
+                break;
+            case "AbortError":
+            case "NotAllowedError":
+                msg = "You or your system denied permission to use webcams!";
+                break;
+            case "OverconstrainedError":
+                msg = "Your webcam cannot be satisfied!";
+                break;
+            default:
+                msg = "Unknown error! Cannot create streaming!";
+                break;
+        }
+
+        ui.showMessage(
+            msg,
+            () => {
+                location.reload();
+            },
+            "error",
+            "Reload"
+        );
     }
 }
