@@ -82,10 +82,12 @@ export async function showLoading(msg = "") {
     }
 
     $("body").css("overflow-y", "hidden");
-
-    $("#div-blur").show();
     $("#loading").show();
-    gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.7, duration: 0.3 });
+
+    if ($("#div-blur").is(":visible") === false) {
+        $("#div-blur").show();
+        gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.7, duration: 0.3 });
+    }
 
     gsap.fromTo("#loading", { opacity: 0.0, scale: 0.1 }, { opacity: 1, duration: 0.3, scale: 1 });
 
@@ -168,10 +170,11 @@ async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType 
             .addClass("btn-success")
             .off("click")
             .on("click", function () {
-                hideDialog();
                 if (okyesFn !== null) {
                     okyesFn();
                 }
+
+                hideDialog();
             });
         if (iconType === null) {
             iconType = "info";
@@ -184,10 +187,11 @@ async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType 
             .text(btnOkyesText)
             .off("click")
             .on("click", function () {
-                hideDialog();
                 if (okyesFn !== null) {
                     okyesFn();
                 }
+
+                hideDialog();
             });
         $(btns[1])
             .show()
@@ -196,10 +200,11 @@ async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType 
             .addClass("btn-danger")
             .off("click")
             .on("click", function () {
-                hideDialog();
                 if (cancelFn !== null) {
                     cancelFn();
                 }
+
+                hideDialog();
             });
         if (iconType === null) {
             iconType = "warn";
@@ -273,8 +278,11 @@ function initStsRange() {
 }
 
 function hideDialog() {
-    $("body").css("overflow-y", "");
-    gsap.fromTo("#div-blur", { opacity: 0.7 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
+    if ($("div[id=settings]:visible, div[id=loading]:visible, div[id=settings]:visible").length == 0) {
+        $("body").css("overflow-y", "");
+        gsap.fromTo("#div-blur", { opacity: 0.7 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
+    }
+
     gsap.fromTo("#dialog", { opacity: 1, scale: 1 }, { opacity: 0, duration: 0.3, scale: 0.1, onComplete: () => $("#dialog").hide() });
     dialogIconAni.pause();
 }

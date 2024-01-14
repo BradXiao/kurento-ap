@@ -196,7 +196,6 @@ export class Service {
         $("#selRelay").val(parsedMessage.relay);
         $("#selDisplayMode").val(parsedMessage.dspMode);
         $("#rangeConfi").val(parsedMessage.confi);
-
         await utils.sleep(1000);
         if ($("#settings").is(":visible") !== true) {
             ui.hideLoading();
