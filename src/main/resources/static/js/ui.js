@@ -2,10 +2,12 @@ import * as utils from "./utils.js";
 let dialogIconAni = null;
 let blurFocusAni = null;
 export function init() {
+    window.scrollTo(0, 0);
+    ////navbar
     $(".third-button").on("click", function () {
         $(".animated-icon3").toggleClass("open");
     });
-
+    ////navbar menu
     var navBtn = $("#NavBar").find("button");
     $("#navbarSupportedContent")
         .find("a")
@@ -32,7 +34,7 @@ export function init() {
                 }
             });
         });
-
+    ////content ani
     $("div[class=mainpage] > div:not(.padding) > div").each(function () {
         $(this)
             .find(">*:not(h4)")

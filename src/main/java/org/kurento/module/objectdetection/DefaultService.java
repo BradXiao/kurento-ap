@@ -54,7 +54,7 @@ public class DefaultService {
         log.info("{}: initSession with turn server username {}", session.getId(), turnInfo[0]);
     }
 
-    public void initKMSSession(final Session session, JsonObject jsonMessage) {
+    public void initKMSSession(final Session session, final JsonObject jsonMessage) {
         log.info("{}: initKMSSession", session.getId());
         UserSession user = users.get(session.getId());
         MediaPipeline pipeline = kurento.createMediaPipeline();
@@ -87,7 +87,7 @@ public class DefaultService {
         user.getObjdet().getModelNames();
     }
 
-    public void changeModel(final Session session, JsonObject jsonMessage) {
+    public void changeModel(final Session session, final JsonObject jsonMessage) {
         UserSession user = users.get(session.getId());
         String targetModel = jsonMessage.get("newModelName").getAsString();
         if (user.getSelectedModel().equals(targetModel)) {
@@ -99,7 +99,7 @@ public class DefaultService {
         user.setSelectedModel(targetModel);
     }
 
-    public void setBoxLimit(final Session session, JsonObject jsonMessage) {
+    public void setBoxLimit(final Session session, final JsonObject jsonMessage) {
         log.info("{}: set box limit", session.getId());
         UserSession user = users.get(session.getId());
         int maxNum = jsonMessage.get("maxNum").getAsInt();
@@ -113,7 +113,7 @@ public class DefaultService {
 
     }
 
-    public void setConfi(final Session session, JsonObject jsonMessage) {
+    public void setConfi(final Session session, final JsonObject jsonMessage) {
         log.info("{}: set box confidence", session.getId());
         UserSession user = users.get(session.getId());
         float confi = jsonMessage.get("confi").getAsFloat();
@@ -127,7 +127,7 @@ public class DefaultService {
 
     }
 
-    public void setInferring(final Session session, JsonObject jsonMessage) {
+    public void setInferring(final Session session, final JsonObject jsonMessage) {
         log.info("{}: set inferring", session.getId());
         UserSession user = users.get(session.getId());
         if (jsonMessage.get("sw").getAsString().equals("true")) {
@@ -139,7 +139,7 @@ public class DefaultService {
         }
     }
 
-    public void setInferringDelay(final Session session, JsonObject jsonMessage) {
+    public void setInferringDelay(final Session session, final JsonObject jsonMessage) {
         log.info("{}: set inferring delay", session.getId());
         UserSession user = users.get(session.getId());
         int delayMs = jsonMessage.get("delayMs").getAsInt();
@@ -152,7 +152,7 @@ public class DefaultService {
         log.debug("{}: signal inferring delay {} ms to KMS", session.getId(), delayMs);
     }
 
-    public void setDrawing(final Session session, JsonObject jsonMessage) {
+    public void setDrawing(final Session session, final JsonObject jsonMessage) {
         log.info("{}: set drawing", session.getId());
         UserSession user = users.get(session.getId());
         if (jsonMessage.get("sw").getAsString().equals("true")) {
@@ -167,7 +167,7 @@ public class DefaultService {
 
     }
 
-    public void setRelay(final Session session, JsonObject jsonMessage) {
+    public void setRelay(final Session session, final JsonObject jsonMessage) {
         log.info("{}: set relay server", session.getId());
         UserSession user = users.get(session.getId());
         String relayName = jsonMessage.get("name").getAsString();
@@ -180,7 +180,7 @@ public class DefaultService {
 
     }
 
-    public void setDspMode(final Session session, JsonObject jsonMessage) {
+    public void setDspMode(final Session session, final JsonObject jsonMessage) {
         log.info("{}: set display mode", session.getId());
         UserSession user = users.get(session.getId());
         String mode = jsonMessage.get("mode").getAsString();
@@ -210,7 +210,7 @@ public class DefaultService {
         log.debug("{}: settings = {}", session.getId(), settings.toString());
     }
 
-    public void onIceCandidate(final Session session, JsonObject jsonMessage) {
+    public void onIceCandidate(final Session session, final JsonObject jsonMessage) {
         JsonObject jsonCandidate = jsonMessage.get("candidate").getAsJsonObject();
         UserSession user = users.get(session.getId());
         IceCandidate candidate = new IceCandidate(jsonCandidate.get("candidate").getAsString(),
@@ -249,7 +249,7 @@ public class DefaultService {
 
     }
 
-    public void sendError(Session session, String state, String textMessage) {
+    public void sendError(Session session, String state, final String textMessage) {
         JsonObject response = new JsonObject();
         response.addProperty("id", "error");
         response.addProperty("state", state);
@@ -257,7 +257,7 @@ public class DefaultService {
         sendMessage(session, response.toString());
     }
 
-    public void sendMessage(Session session, String jsonMessage) {
+    public void sendMessage(Session session, final String jsonMessage) {
         log.debug("{}: Send message: {}", session.getId(), jsonMessage);
         synchronized (session) {
 
@@ -274,7 +274,7 @@ public class DefaultService {
     // private
     // ==============================================================================================================
 
-    private void registerEvents(Session session, WebRtcEndpoint webRtcEndpoint, ObjDet objDetFilter) {
+    private void registerEvents(final Session session, WebRtcEndpoint webRtcEndpoint, ObjDet objDetFilter) {
         log.info("{}: register event", session.getId());
         webRtcEndpoint.addIceCandidateFoundListener(event -> {
             JsonObject response = new JsonObject();
@@ -334,7 +334,7 @@ public class DefaultService {
 
     }
 
-    private void startStreaming(final Session session, String sdpOffer) {
+    private void startStreaming(final Session session, final String sdpOffer) {
         log.info("{}: start streaming", session.getId());
         UserSession user = users.get(session.getId());
         String sdpAnswer = user.getWebRtcEndpoint().processOffer(sdpOffer);
