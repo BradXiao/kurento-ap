@@ -1,6 +1,7 @@
 import * as utils from "./utils.js";
 let dialogIconAni = null;
 let blurFocusAni = null;
+let scrollLock = false;
 export function init() {
     window.scrollTo(0, 0);
     ////navbar
@@ -14,18 +15,23 @@ export function init() {
         .each(function () {
             $(this).on("click", function (event) {
                 event.preventDefault();
-
+                scrollLock = true;
+                $("#NavBar").find("a:not(.header-title)").removeClass("active");
+                $(this).addClass("active");
                 var targetID = $(this).attr("href");
                 if (targetID.length) {
                     gsap.to(window, {
                         duration: 1.5,
                         scrollTo: {
                             y: targetID,
-                            offsetY: 40,
+                            offsetY: 70,
                             autoKill: false,
                         },
 
                         ease: "power3.out",
+                        onComplete: async () => {
+                            scrollLock = false;
+                        },
                     });
                 }
 
@@ -73,6 +79,25 @@ export function init() {
 
     $("#div-blur").on("click", clickBlur);
 
+    ////scroll spy
+    $(document).on("scroll", function () {
+        if (scrollLock == true) {
+            return;
+        }
+
+        var currentY = $(document).scrollTop() + 80;
+
+        var activeId = null;
+        $("div[class=mainpage] > div:not(.padding) > div > h4").each(function () {
+            if (currentY >= $(this).offset().top) {
+                activeId = $(this).attr("id");
+            }
+        });
+        $("#NavBar").find("a:not(.header-title)").removeClass("active");
+        $("#NavBar")
+            .find("a[href='#" + activeId + "']")
+            .addClass("active");
+    });
     ////others
     initStsRange();
 }
