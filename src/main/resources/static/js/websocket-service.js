@@ -84,11 +84,18 @@ export class Service {
             webcams.sort(function (a, b) {
                 return a.name.localeCompare(b.name);
             });
+            var isDetected = false;
             for (var i = 0; i < webcams.length; i += 1) {
                 if (webcams[i].name.includes("back")) {
+                    isDetected = true;
                     $("#selVideoSrc").val(webcams[i].deviceId);
                     break;
                 }
+            }
+
+            if (isDetected == false) {
+                //not detected, the last is usually the back cambera
+                $("#selVideoSrc option:last").prop("selected", true);
             }
         } else {
             $("#selVideoSrc").val(webcams[0].deviceId);
