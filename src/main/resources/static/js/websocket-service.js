@@ -30,11 +30,9 @@ export class Service {
         //// btns
         $("#btnStartPause").on("click", self.#startPauseStreaming);
         $("#btnStop").on("click", self.#stopStreaming).prop("disabled", true);
-        $("#btnSettings")
-            .on("click", function () {
-                ui.showSettings();
-            })
-            .prop("disabled", true);
+        $("#btnSettings").on("click", function () {
+            ui.showSettings();
+        });
         $("#btnHelp").on("click", function () {
             ui.showMessage("This function is still developing.");
         });
@@ -197,14 +195,17 @@ export class Service {
                 self.sendMessage({ id: "initKMSSession", sdpOffer: offerSdp });
             });
         });
-        $("#btnSettings").prop("disabled", false);
     }
 
     #pauseStreaming() {
         $("#videoInput")[0]
             .srcObject.getTracks()
             .forEach((t) => (t.enabled = !t.enabled));
-        $("#btnStartPause").html('<i class="bi bi-play-circle"></i> <span>Resume</span>').addClass("btn-s1").remove("btn-warning");
+        $("#btnStartPause")
+            .html('<i class="bi bi-play-circle"></i> <span>Resume</span>')
+            .addClass("btn-s1")
+            .removeClass("btn-warning")
+            .addClass("btn-primary");
         ui.setStrmOverlay("pause");
     }
 
@@ -236,10 +237,13 @@ export class Service {
             clearInterval(self.#heartbeatTimerId);
         }
 
-        $("#btnStartPause").html('<i class="bi bi-play-circle"></i> <span>Start</span>').addClass("btn-s1").remove("btn-warning");
+        $("#btnStartPause")
+            .html('<i class="bi bi-play-circle"></i> <span>Start</span>')
+            .addClass("btn-s1")
+            .removeClass("btn-warning")
+            .addClass("btn-primary");
         $("#btnStop").prop("disabled", true);
         ui.setStrmOverlay("stop");
-        $("#btnSettings").prop("disabled", true);
     }
 
     async handleConnected() {

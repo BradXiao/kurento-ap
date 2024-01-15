@@ -151,6 +151,11 @@ export function showConfirm(msg, okFn = null, cancelFn = null, iconType = null, 
 }
 
 export function showSettings() {
+    if ($("#btnStartPause").text().trim() === "Start") {
+        showMessage("The settings panel is available only after streaming is started.");
+        return;
+    }
+
     $("#div-blur").show();
     gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.8, duration: 0.3 });
     $("#settings").show();

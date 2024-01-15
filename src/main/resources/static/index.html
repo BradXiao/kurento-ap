@@ -70,13 +70,13 @@
         <div id="dialog">
             <div id="dialog-container" class="container">
                 <div id="dialog-top" class="row">
-                    <div class="col-3 dialog-top-icon-div all-grid-center">
+                    <div class="col dialog-top-icon-div">
                         <img name="info" class="dialog-icon-1" src="img/information.png" />
                         <img name="warn" class="dialog-icon-2" src="img/warning-sign.png" />
                         <img name="error" class="dialog-icon-1" src="img/cross.png" />
                     </div>
                     <div class="col dialog-text">
-                        <p id="dialog-text" class="fw-bold no-margin">Loading the data...</p>
+                        <p id="dialog-text" class="no-margin">Something</p>
                     </div>
                 </div>
                 <div id="dialog-bottom" class="row">
@@ -110,7 +110,7 @@
         </div>
         <!--settings-->
         <div id="settings">
-            <form class="form-dialog">
+            <form class="form-dialog form-setting">
                 <div class="row form-div">
                     <label for="rangeConfi" class="form-label form-label">Object confidence threshold</label>
                     <input type="range" class="form-range" min="0.05" max="0.95" step="0.05" id="rangeConfi" />
@@ -152,16 +152,16 @@
                         <option value="local" disabled>Local</option>
                     </select>
                 </div>
-                <div class="row form-div">
-                    <div class="col-4"></div>
-                    <div class="col sts-btn-div">
-                        <button type="button" class="btn rounded-pill btn-primary" id="btnStsApply">Apply</button>
-                    </div>
-                    <div class="col sts-btn-div">
-                        <button type="button" class="btn rounded-pill btn-danger" id="btnStsCancel">Cancel</button>
-                    </div>
-                </div>
             </form>
+            <div class="row setting-bottom">
+                <div class="col-4"></div>
+                <div class="col sts-btn-div">
+                    <button type="button" class="btn rounded-pill btn-dark w-75" id="btnStsCancel">Cancel</button>
+                </div>
+                <div class="col sts-btn-div">
+                    <button type="button" class="btn rounded-pill btn-primary w-75" id="btnStsApply">Apply</button>
+                </div>
+            </div>
         </div>
         <!--content-->
         <div class="mainpage container">

@@ -5,6 +5,7 @@
     --secondary-color: #535d68;
     --divider-color: rgba(131, 145, 165, 0.1);
     --main-background: #111316;
+    --second-background: #1c1e20;
 }
 
 .mainpage {
@@ -24,6 +25,26 @@ body {
     background: var(--main-background);
     overflow-y: auto;
     overflow-x: hidden;
+
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    &::-webkit-scrollbar-button {
+        background: transparent;
+        height: 2px;
+    }
+
+    &::-webkit-scrollbar-track-piece,
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background-color: var(--title-color-1);
+        border: 1px solid var(--main-background);
+    }
 }
 
 h2 {
@@ -70,7 +91,6 @@ h2:before {
 }
 
 #dialog {
-    background-color: white;
     position: fixed;
     width: 80%;
     z-index: 9999;
@@ -81,7 +101,7 @@ h2:before {
     min-height: 30vh;
     max-height: 60vh;
     border-radius: 5px;
-    box-shadow: 2px 2px 5px 1px black;
+    box-shadow: 1px 1px 10px 0px black;
     display: none;
 }
 
@@ -90,13 +110,14 @@ h2:before {
 }
 
 #dialog-top {
-    min-height: 21vh;
+    min-height: 15vh;
+    background-color: var(--main-background);
+    border-radius: 5px 5px 0px 0px;
 }
 
 #dialog-bottom {
-    min-height: 9vh;
-    background-color: var(--main-background);
-    box-shadow: 2px 2px 5px 1px black;
+    background-color: var(--second-background);
+    border-radius: 0px 0px 5px 5px;
 }
 
 .dialog-center {
@@ -114,7 +135,9 @@ h2:before {
 
 .dialog-icon-1 {
     display: block;
-    width: 70px;
+    width: 50px;
+    left: 1rem;
+    position: relative;
 }
 
 .dialog-icon-2 {
@@ -160,10 +183,14 @@ h2:before {
     border: 0;
 }
 
-.btn-warning {
-    background: linear-gradient(-45deg, #cbd800, #fffd00);
+.btn-danger {
+    background: linear-gradient(-45deg, #6e1b23, #ec495a);
     border: 0;
-    color: var(--main-background) !important;
+}
+
+.btn-dark {
+    background: linear-gradient(-45deg, #292e31, #606468);
+    border: 0;
 }
 
 @-webkit-keyframes bg-spin {
@@ -235,6 +262,15 @@ footer i {
     color: #fff;
 }
 
+.dialog-top-icon-div {
+    margin-right: 0rem;
+    padding: 0rem;
+    display: grid;
+    align-content: space-evenly;
+    flex: 0 0 auto;
+    width: 76px;
+}
+
 @media only screen and (max-width: 300px) {
     /* mobile*/
     .dialog-top-icon-div {
@@ -249,8 +285,9 @@ footer i {
     align-content: center;
     align-items: center;
     overflow-wrap: anywhere;
-    padding-left: 0;
-    padding-right: 3px;
+    padding-left: 0px;
+    padding-right: 8px;
+    color: var(--title-color-1);
 }
 
 .all-grid-center {
@@ -304,7 +341,8 @@ footer i {
     position: absolute;
     height: 1rem;
     display: none;
-    padding-left: 1rem;
+    margin-top: 0.2rem;
+    margin-left: 1rem;
 }
 
 .video-overlay-img {
@@ -312,7 +350,6 @@ footer i {
 }
 
 #settings {
-    background-color: white;
     position: fixed;
     width: 80%;
     z-index: 9999;
@@ -322,7 +359,7 @@ footer i {
     max-width: 30rem;
     min-height: 30vh;
     border-radius: 5px;
-    box-shadow: 2px 2px 5px 1px black;
+    box-shadow: 1px 1px 10px 0px black;
     display: none;
 }
 
@@ -349,4 +386,96 @@ footer i {
     align-items: center;
     padding: 0;
     justify-items: end;
+}
+
+.form-setting {
+    overflow: auto;
+    max-height: 80vh;
+    background-color: var(--main-background);
+
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    &::-webkit-scrollbar-button {
+        background: transparent;
+        height: 2px;
+    }
+
+    &::-webkit-scrollbar-track-piece,
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background-color: var(--title-color-1);
+        border: 1px solid var(--main-background);
+    }
+}
+
+.setting-bottom {
+    margin-left: 1px;
+    margin-right: 1px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding: 10px;
+    background-color: var(--second-background);
+    border-radius: 0px 0px 5px 5px;
+}
+
+form label {
+    color: var(--title-color-1);
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+/***** Chrome, Safari, Opera, and Edge Chromium *****/
+input[type="range"]::-webkit-slider-runnable-track {
+    background: var(--title-color-1);
+    /* height: 0.5rem; */
+}
+
+/******** Firefox ********/
+input[type="range"]::-moz-range-track {
+    background: var(--title-color-1);
+    /* height: 0.5rem; */
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #1cb5e0;
+}
+
+/***** Firefox *****/
+input[type="range"]::-moz-range-thumb {
+    border: none; /*Removes extra border that FF applies*/
+    border-radius: 0; /*Removes default border-radius that FF applies*/
+    background-color: #1cb5e0;
+}
+
+.form-check-input:checked[type="checkbox"] {
+    background-color: #1cb5e0;
+    height: 1.3rem;
+    margin-top: 0.1rem;
+}
+
+.form-switch .form-check-input {
+    width: 2.5em;
+    margin-right: 0.5em;
+    height: 1.3rem;
+    margin-top: 0.1rem;
+}
+
+.form-select {
+    --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%231cb5e0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-color: var(--main-background);
+    border-color: #1cb5e0;
+    color: var(--title-color-1);
 }
