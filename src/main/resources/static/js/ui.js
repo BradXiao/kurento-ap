@@ -24,7 +24,7 @@ export function init() {
                 var targetID = $(this).attr("href");
                 if (targetID.length) {
                     gsap.to(window, {
-                        duration: 1.5,
+                        duration: 1,
                         scrollTo: {
                             y: targetID,
                             offsetY: 70,
@@ -34,12 +34,11 @@ export function init() {
                         ease: "power3.out",
                         onComplete: async () => {
                             scrollLock = false;
+                            if (navBtn.is(":visible") == true && navBtn.hasClass("collapsed") == false) {
+                                navBtn.trigger("click");
+                            }
                         },
                     });
-                }
-
-                if (navBtn.is(":visible") == true && navBtn.hasClass("collapsed") == false) {
-                    navBtn.trigger("click");
                 }
             });
         });
@@ -116,7 +115,7 @@ export async function showLoading(msg = "") {
 
     if ($("#div-blur").is(":visible") === false) {
         $("#div-blur").show();
-        gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.7, duration: 0.3 });
+        gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.8, duration: 0.3 });
     }
 
     gsap.fromTo("#loading", { opacity: 0.0, scale: 0.1 }, { opacity: 1, duration: 0.3, scale: 1 });
@@ -133,7 +132,7 @@ export async function showLoading(msg = "") {
 export async function hideLoading(hideBlur = true) {
     if (hideBlur == true) {
         $("body").css("overflow-y", "");
-        gsap.fromTo("#div-blur", { opacity: 0.7 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
+        gsap.fromTo("#div-blur", { opacity: 0.8 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
     }
 
     gsap.fromTo(
@@ -153,7 +152,7 @@ export function showConfirm(msg, okFn = null, cancelFn = null, iconType = null, 
 
 export function showSettings() {
     $("#div-blur").show();
-    gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.7, duration: 0.3 });
+    gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.8, duration: 0.3 });
     $("#settings").show();
     $("body").css("overflow-y", "hidden");
     gsap.fromTo(
@@ -173,7 +172,7 @@ export function showSettings() {
 export function hideSettings() {
     $("body").css("overflow-y", "");
     if ($("div[id=loading]:visible, div[id=dialog]:visible").length == 0) {
-        gsap.fromTo("#div-blur", { opacity: 0.7 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
+        gsap.fromTo("#div-blur", { opacity: 0.8 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
     }
 
     gsap.fromTo(
@@ -252,7 +251,7 @@ async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType 
     $("#dialog-text").text(msg);
     if ($("#div-blur").is(":visible") == false) {
         $("#div-blur").show();
-        gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.7, duration: 0.3 });
+        gsap.fromTo("#div-blur", { opacity: 0.0 }, { opacity: 0.8, duration: 0.3 });
     }
 
     $("#dialog").show();
@@ -310,7 +309,7 @@ function initStsRange() {
 function hideDialog() {
     if ($("div[id=settings]:visible, div[id=loading]:visible, div[id=settings]:visible").length == 0) {
         $("body").css("overflow-y", "");
-        gsap.fromTo("#div-blur", { opacity: 0.7 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
+        gsap.fromTo("#div-blur", { opacity: 0.8 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
     }
 
     gsap.fromTo("#dialog", { opacity: 1, scale: 1 }, { opacity: 0, duration: 0.3, scale: 0.1, onComplete: () => $("#dialog").hide() });

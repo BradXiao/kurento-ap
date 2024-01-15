@@ -59,14 +59,8 @@ export class Service {
         // debugger;
         const webcams = await utils.getWebcams();
         if (webcams.length == 0) {
-            ui.showMessage(
-                "No video source is available.",
-                () => {
-                    $("html").html("");
-                },
-                "error",
-                "Exit"
-            );
+            this.#defaultDeviceId = null;
+            ui.showMessage("No video source is available. The demo will not work.", null, "error");
             return;
         }
 
@@ -125,6 +119,17 @@ export class Service {
     }
 
     #startPauseStreaming() {
+        if (self.#platform.os === "MacOS") {
+            ui.showMessage("The demo is currently only supported on Windows, Android and iOS. The demo will not work.", null, "error");
+            return;
+        } else if (self.#platform.os === "iOS" && self.#platform.browser === "chrome") {
+            ui.showMessage("The demo currently only supports Safari on iOS. The demo will not work.", null, "error");
+            return;
+        } else if (self.#defaultDeviceId === null) {
+            ui.showMessage("No video source is available. The demo will not work.", null, "error");
+            return;
+        }
+
         var btnText = $("#btnStartPause").text().trim();
         if (btnText === "Start") {
             self.#startStreaming();
@@ -368,7 +373,7 @@ export class Service {
                 break;
             case "AbortError":
             case "NotAllowedError":
-                msg = "You or your system denied permission to use webcams!";
+                msg = "Webcams permission is denied by the user or system!";
                 break;
             case "OverconstrainedError":
                 msg = "Your webcam cannot be satisfied!";
