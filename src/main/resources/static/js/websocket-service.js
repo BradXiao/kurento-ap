@@ -14,11 +14,14 @@ export class Service {
     #selectedModel = null;
     #streamingMode = 1;
     #isInferring = false;
+    #defaultDeviceId = null;
+    #usePrevParam = false;
 
     constructor(ws) {
         self = this;
         this.#ws = ws;
         this.#initComponents();
+        this.#initWebcams();
     }
 
     #initComponents() {
@@ -48,6 +51,48 @@ export class Service {
             ui.hideSettings();
             self.sendMessage({ id: "getSettings" });
         });
+    }
+
+    async #initWebcams() {
+        // debugger;
+        const webcams = await utils.getWebcams();
+        if (webcams.length == 0) {
+            ui.showMessage(
+                "No video source is available.",
+                () => {
+                    $("html").html("");
+                },
+                "error",
+                "Exit"
+            );
+            return;
+        }
+
+        $("#selVideoSrc").empty();
+        for (var i = 0; i < webcams.length; i += 1) {
+            var newOption = $("<option>", {
+                value: webcams[i].deviceId,
+                text: webcams[i].name,
+            });
+            $("#selVideoSrc").append(newOption);
+        }
+
+        if (webcams.length > 1) {
+            // try guess to get the environmental webcam
+            webcams.sort(function (a, b) {
+                return a.name.localeCompare(b.name);
+            });
+            for (var i = 0; i < webcams.length; i += 1) {
+                if (webcams[i].name.includes("back")) {
+                    $("#selVideoSrc").val(webcams[i].deviceId);
+                    break;
+                }
+            }
+        } else {
+            $("#selVideoSrc").val(webcams[0].deviceId);
+        }
+
+        this.#defaultDeviceId = $("#selVideoSrc").val();
     }
 
     handleTurnInfo(parsedMessage) {
@@ -92,7 +137,7 @@ export class Service {
             remoteVideo: document.getElementById("videoOutput"),
             onicecandidate: self.onIceCandidate,
             mediaConstraints: {
-                video: true, // { facingMode: { exact: "environment" } },
+                video: { deviceId: this.#defaultDeviceId },
                 audio: false,
             },
             configuration: {
@@ -189,8 +234,20 @@ export class Service {
             .addClass("btn-warning");
         $("#btnStop").prop("disabled", false);
         self.sendMessage({ id: "setInferring", sw: "true" });
-        self.sendMessage({ id: "setInferringDelay", delayMs: 500 });
-        self.sendMessage({ id: "setDrawing", sw: "true" });
+        if (self.#usePrevParam === true) {
+            self.sendMessage({ id: "setConfi", confi: $("#rangeConfi").val() });
+            self.sendMessage({ id: "setBoxLimit", maxNum: $("#rangeBoxLmt").val() });
+            self.sendMessage({ id: "setInferringDelay", delayMs: $("#rangeInferDly").val() });
+            self.sendMessage({ id: "setDrawing", sw: $("#swDspBoxes").is(":checked") });
+            self.sendMessage({ id: "changeModel", newModelName: $("#selModel").val() });
+            self.sendMessage({ id: "setRelay", name: $("#selRelay").val() });
+            self.sendMessage({ id: "setDspMode", mode: $("#selDisplayMode").val() });
+            self.#usePrevParam = false;
+        } else {
+            self.sendMessage({ id: "setInferringDelay", delayMs: 500 });
+            self.sendMessage({ id: "setDrawing", sw: "true" });
+        }
+
         self.#isInferring = true;
         ui.setStrmOverlay("recog");
         self.sendMessage({ id: "getSettings" });
@@ -206,6 +263,14 @@ export class Service {
         $("#selDisplayMode").val(parsedMessage.dspMode);
         $("#rangeConfi").val(parsedMessage.confi);
         await utils.sleep(1000);
+        if (self.#defaultDeviceId !== $("#selVideoSrc").val()) {
+            self.#defaultDeviceId = $("#selVideoSrc").val();
+            self.#usePrevParam = true;
+            self.#stopStreaming();
+            self.#startStreaming();
+            return;
+        }
+
         if ($("#settings").is(":visible") !== true) {
             ui.hideLoading();
         }

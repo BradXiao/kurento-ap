@@ -129,19 +129,25 @@
                 </div>
                 <div class="row form-div">
                     <label for="selModel" class="form-label form-label">Inference model</label>
-                    <select id="selModel" class="form-select" aria-label="Default select example"></select>
+                    <select id="selModel" class="form-select"></select>
                 </div>
                 <div class="row form-div">
                     <label for="selRelay" class="form-label form-label">Streaming relay server</label>
-                    <select id="selRelay" class="form-select" aria-label="Default select example">
+                    <select id="selRelay" class="form-select">
                         <option value="default">Default</option>
                         <option value="GCP" disabled>GCP (under construction)</option>
                     </select>
                 </div>
-
                 <div class="row form-div">
                     <label for="selDisplayMode" class="form-label form-label">Processed frames display mode</label>
-                    <select id="selDisplayMode" class="form-select" aria-label="Default select example">
+                    <select id="selDisplayMode" class="form-select">
+                        <option value="remote" selected>Remote</option>
+                        <option value="local" disabled>Local</option>
+                    </select>
+                </div>
+                <div class="row form-div">
+                    <label for="selVideoSrc" class="form-label form-label">Video source</label>
+                    <select id="selVideoSrc" class="form-select">
                         <option value="remote" selected>Remote</option>
                         <option value="local" disabled>Local</option>
                     </select>

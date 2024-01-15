@@ -26,3 +26,25 @@ export function getPlatform() {
 
     return os;
 }
+
+export async function getWebcams() {
+    try {
+        const deviceInfos = await navigator.mediaDevices.enumerateDevices();
+        // Handles being called several times to update labels. Preserve values.
+        var devices = [];
+        for (let i = 0; i !== deviceInfos.length; ++i) {
+            const deviceInfo = deviceInfos[i];
+            if (deviceInfo.kind === "videoinput") {
+                devices.push({
+                    name: deviceInfo.label || `camera ${videoSelect.length + 1}`,
+                    deviceId: deviceInfo.deviceId,
+                });
+            }
+        }
+
+        return devices;
+    } catch (error) {
+        console.error("Error in getting devices:", error);
+        return [];
+    }
+}
