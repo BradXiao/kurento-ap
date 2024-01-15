@@ -5,10 +5,19 @@ let controller = null;
 window.onload = function () {
     ui.init();
     controller = new wsController.Controller();
-    var os = utils.getPlatform();
-    if (os === "MacOS" || os === "iOS") {
+    var plat = utils.getPlatform();
+    if (plat.os === "MacOS") {
         ui.showMessage(
-            "The demo is not supported on iOS yet.",
+            "The demo is currently only supported on Windows, Android and iOS.",
+            () => {
+                $("body").html("");
+            },
+            "error",
+            "Exit"
+        );
+    } else if (plat.os === "iOS" && plat.browser === "chrome") {
+        ui.showMessage(
+            "The demo currently only supports Safari on iOS.",
             () => {
                 $("body").html("");
             },

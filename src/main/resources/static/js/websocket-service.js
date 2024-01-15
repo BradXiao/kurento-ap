@@ -16,12 +16,14 @@ export class Service {
     #isInferring = false;
     #defaultDeviceId = null;
     #usePrevParam = false;
+    #platform = null;
 
     constructor(ws) {
         self = this;
         this.#ws = ws;
         this.#initComponents();
         this.#initWebcams();
+        this.#platform = utils.getPlatform();
     }
 
     #initComponents() {
@@ -131,6 +133,30 @@ export class Service {
     async #startStreaming() {
         console.log("start");
         await ui.showLoading("Prepare streaming...");
+        let config;
+        if (this.#platform.os === "iOS") {
+            config = {
+                iceServers: [
+                    {
+                        urls: "turn:" + self.#turnInfo.server,
+                        username: self.#turnInfo.username,
+                        credential: self.#turnInfo.credential,
+                    },
+                ],
+                iceTransportPolicy: "relay",
+            };
+        } else {
+            config = {
+                iceServers: [
+                    {
+                        url: "turn:" + self.#turnInfo.server,
+                        username: self.#turnInfo.username,
+                        credential: self.#turnInfo.credential,
+                    },
+                ],
+                iceTransportPolicy: "relay",
+            };
+        }
 
         var options = {
             localVideo: document.getElementById("videoInput"),
@@ -140,16 +166,7 @@ export class Service {
                 video: { deviceId: this.#defaultDeviceId },
                 audio: false,
             },
-            configuration: {
-                iceServers: [
-                    {
-                        url: "turn:" + self.#turnInfo.server,
-                        username: self.#turnInfo.username,
-                        credential: self.#turnInfo.credential,
-                    },
-                ],
-                iceTransportPolicy: "relay",
-            },
+            configuration: config,
         };
         await ui.showLoading("Create streaming...");
         self.#webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options, function (error) {

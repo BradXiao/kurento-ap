@@ -24,7 +24,30 @@ export function getPlatform() {
         os = "Linux";
     }
 
-    return os;
+    //https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browsers#answer-49448231
+    let browser = null;
+    if (/firefox|fxios/i.test(window.navigator.userAgent)) {
+        browser = "firefox";
+    } else if (/chrome|chromium|crios/i.test(window.navigator.userAgent)) {
+        browser = "chrome";
+    } else if (/safari/i.test(window.navigator.userAgent)) {
+        browser = "safari";
+    } else if (/opr\//i.test(window.navigator.userAgent)) {
+        browser = "opera";
+    } else if (/trident/i.test(window.navigator.userAgent)) {
+        browser = "ie";
+    } else if (/edg/i.test(window.navigator.userAgent)) {
+        browser = "edge";
+    } else if (/ucbrowser/i.test(window.navigator.userAgent)) {
+        browser = "edgechromium";
+    } else if (/samsungbrowser/i.test(window.navigator.userAgent)) {
+        browser = "blink";
+    }
+
+    return {
+        os: os,
+        browser: browser,
+    };
 }
 
 export async function getWebcams() {
@@ -35,8 +58,10 @@ export async function getWebcams() {
         for (let i = 0; i !== deviceInfos.length; ++i) {
             const deviceInfo = deviceInfos[i];
             if (deviceInfo.kind === "videoinput") {
+                const label = deviceInfo.label.trim();
+
                 devices.push({
-                    name: deviceInfo.label || `camera ${videoSelect.length + 1}`,
+                    name: label === "" ? `Source ${devices.length + 1}` : label,
                     deviceId: deviceInfo.deviceId,
                 });
             }
