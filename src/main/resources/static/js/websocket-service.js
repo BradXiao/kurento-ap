@@ -71,11 +71,12 @@ export class Service {
     }
 
     #startPauseStreaming() {
-        if ($("#btnStartPause").text() === "Start") {
+        var btnText = $("#btnStartPause").text().trim();
+        if (btnText === "Start") {
             self.#startStreaming();
-        } else if ($("#btnStartPause").text() === "Pause") {
+        } else if (btnText === "Pause") {
             self.#pauseStreaming();
-        } else if ($("#btnStartPause").text() === "Resume") {
+        } else if (btnText === "Resume") {
             self.#resumeStreaming();
         } else {
             console.error("unknown command");
@@ -91,7 +92,7 @@ export class Service {
             remoteVideo: document.getElementById("videoOutput"),
             onicecandidate: self.onIceCandidate,
             mediaConstraints: {
-                video: true,
+                video: true, // { facingMode: { exact: "environment" } },
                 audio: false,
             },
             configuration: {
@@ -129,7 +130,7 @@ export class Service {
         $("#videoInput")[0]
             .srcObject.getTracks()
             .forEach((t) => (t.enabled = !t.enabled));
-        $("#btnStartPause").text("Resume");
+        $("#btnStartPause").html('<i class="bi bi-play-circle"></i> <span>Resume</span>').addClass("btn-s1").remove("btn-warning");
         ui.setStrmOverlay("pause");
     }
 
@@ -137,7 +138,11 @@ export class Service {
         $("#videoInput")[0]
             .srcObject.getTracks()
             .forEach((t) => (t.enabled = !t.enabled));
-        $("#btnStartPause").text("Pause");
+        $("#btnStartPause")
+            .html('<i class="bi bi-pause"></i> <span>Pause</span>')
+            .removeClass("btn-1")
+            .removeClass("btn-primary")
+            .addClass("btn-warning");
         if (self.#isInferring === true) {
             ui.setStrmOverlay("recog");
         } else {
@@ -157,7 +162,7 @@ export class Service {
             clearInterval(self.#heartbeatTimerId);
         }
 
-        $("#btnStartPause").text("Start");
+        $("#btnStartPause").html('<i class="bi bi-play-circle"></i> <span>Start</span>').addClass("btn-s1").remove("btn-warning");
         $("#btnStop").prop("disabled", true);
         ui.setStrmOverlay("stop");
         $("#btnSettings").prop("disabled", true);
@@ -177,7 +182,11 @@ export class Service {
         } else if (self.#streamingMode === 2) {
         }
 
-        $("#btnStartPause").text("Pause");
+        $("#btnStartPause")
+            .html('<i class="bi bi-pause"></i> <span>Pause</span>')
+            .removeClass("btn-1")
+            .removeClass("btn-primary")
+            .addClass("btn-warning");
         $("#btnStop").prop("disabled", false);
         self.sendMessage({ id: "setInferring", sw: "true" });
         self.sendMessage({ id: "setInferringDelay", delayMs: 500 });

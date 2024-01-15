@@ -1,21 +1,51 @@
 :root {
     --text-color-1: #ffffff;
-    --title-color-1: #ffd60a;
+    --title-color-1: #acbdce;
+    --border-color: #212931;
+    --secondary-color: #535d68;
+    --divider-color: rgba(131, 145, 165, 0.1);
+    --main-background: #111316;
 }
 
 .mainpage {
-    margin: 0em auto;
-    padding: 0em 0.5em;
+    margin: 0 auto;
+    padding: 4rem 1rem 0 1rem;
     max-width: 40em;
 }
 
 body {
-    background: #000020;
-    background: -webkit-linear-gradient(to right, #000020, #000060, #000020);
-    background: linear-gradient(to right, #000020, #000060, #000020);
-
+    font-family: -apple-system, BlinkMacSystemFont, Arial, "Segoe UI", Roboto, "Helvetica Neue", sans-serif, "Apple Color Emoji",
+        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Sans TC", "微軟正黑體", Microsoft JhengHei, 新細明體, PMingLiU;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--main-background);
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+h2 {
+    font-size: 1.25rem;
+    color: var(--title-color-1);
+    padding: 0.6rem 0;
+    margin: 2rem 0 0 0;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: 16px 0;
+    grid-gap: 1rem;
+}
+
+h2:after,
+h2:before {
+    content: " ";
+    display: block;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .title-h {
@@ -65,7 +95,7 @@ body {
 
 #dialog-bottom {
     min-height: 9vh;
-    background-color: #000060;
+    background-color: var(--main-background);
     box-shadow: 2px 2px 5px 1px black;
 }
 
@@ -78,8 +108,8 @@ body {
 
 .dialog-button {
     /* width: 100px; */
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .dialog-icon-1 {
@@ -90,6 +120,119 @@ body {
 .dialog-icon-2 {
     display: block;
     width: 90px;
+}
+
+/* card */
+.card {
+    border: 1px solid #222b31;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background-color: transparent;
+}
+
+.card-body {
+    background-color: #191d20;
+    color: #a7a7a7;
+    text-align: left;
+}
+
+/* border shine */
+.video-on {
+    padding: 0.5rem;
+    --border-size: 3px;
+    --border-angle: 0turn;
+    width: 100%;
+    background-image: conic-gradient(from var(--border-angle), #213, #112 50%, #213),
+        conic-gradient(from var(--border-angle), transparent 15%, rgb(0, 125, 197), rgb(148, 16, 60));
+    background-size: calc(100% - (var(--border-size) * 2)) calc(100% - (var(--border-size) * 2)), cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    -webkit-animation: bg-spin 5s linear infinite;
+    animation: bg-spin 5s linear infinite;
+}
+
+.btn-primary span {
+    margin: 0 0 0 0.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(-45deg, #0b2b83, #1cb5e0);
+    border: 0;
+}
+
+.btn-warning {
+    background: linear-gradient(-45deg, #cbd800, #fffd00);
+    border: 0;
+    color: var(--main-background) !important;
+}
+
+@-webkit-keyframes bg-spin {
+    to {
+        --border-angle: 1turn;
+    }
+}
+
+@keyframes bg-spin {
+    to {
+        --border-angle: 1turn;
+    }
+}
+
+@property --border-angle {
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 0turn;
+}
+
+/* btn style*/
+.btn-s1 {
+    transition: all 0.3s ease;
+    -webkit-transition: all 0.3s ease;
+    border-radius: 6px;
+    background-size: 400% 400%;
+    color: #fff;
+    padding: 0.5rem 0.8rem;
+    animation: gradient 3s ease infinite;
+    -webkit-animation: gradient 3s ease infinite;
+}
+
+.btn-s1:hover {
+    background-size: 150% 150%;
+}
+
+.button-danger {
+    background: linear-gradient(-45deg, #ce0f0f, #fcb045);
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+/* footer */
+footer {
+    border-top: 1px solid var(--border-color);
+    color: var(--title-color-1);
+}
+
+footer span,
+footer i {
+    margin: 0 0.5rem;
+    display: inline-block;
+    color: var(--secondary-color);
+}
+
+footer i {
+    color: #fff;
 }
 
 @media only screen and (max-width: 300px) {
@@ -106,6 +249,8 @@ body {
     align-content: center;
     align-items: center;
     overflow-wrap: anywhere;
+    padding-left: 0;
+    padding-right: 3px;
 }
 
 .all-grid-center {
@@ -117,10 +262,7 @@ body {
 }
 
 #loading {
-    background-color: white;
     position: fixed;
-    /* width: 80vw; */
-    /* height: 60vh; */
     z-index: 9999;
     top: 50%;
     left: 50%;
@@ -128,14 +270,12 @@ body {
     max-width: 300px;
     max-height: 200px;
     border-radius: 5px;
-    box-shadow: 2px 2px 5px 1px black;
     display: none;
     opacity: 0;
 }
 
 .loading-top {
     width: 250px;
-    height: 125px;
     position: relative;
     margin: auto;
 }

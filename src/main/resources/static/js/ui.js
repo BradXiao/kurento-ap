@@ -4,6 +4,9 @@ let blurFocusAni = null;
 let scrollLock = false;
 export function init() {
     window.scrollTo(0, 0);
+    $(document).on("click", function () {
+        $(".navbar .collapse").collapse("hide");
+    });
     ////navbar
     $(".third-button").on("click", function () {
         $(".animated-icon3").toggleClass("open");
@@ -41,9 +44,9 @@ export function init() {
             });
         });
     ////content ani
-    $("div[class=mainpage] > div:not(.padding) > div").each(function () {
+    $(".mainpage > div:not(.padding) > div").each(function () {
         $(this)
-            .find(">*:not(h4)")
+            .find(">*:not(h2)")
             .each(function () {
                 const revealTimeline = gsap.timeline({
                     scrollTrigger: {
@@ -88,7 +91,7 @@ export function init() {
         var currentY = $(document).scrollTop() + 80;
 
         var activeId = null;
-        $("div[class=mainpage] > div:not(.padding) > div > h4").each(function () {
+        $(".mainpage > div:not(.padding) > div > h2").each(function () {
             if (currentY >= $(this).offset().top) {
                 activeId = $(this).attr("id");
             }
@@ -194,7 +197,7 @@ async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType 
             .show()
             .text(btnOkyesText)
             .removeClass("btn-danger")
-            .addClass("btn-success")
+            .addClass("btn-primary")
             .off("click")
             .on("click", function () {
                 if (okyesFn !== null) {
@@ -223,7 +226,7 @@ async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType 
         $(btns[1])
             .show()
             .text(btnCancelText)
-            .removeClass("btn-success")
+            .removeClass("btn-primary")
             .addClass("btn-danger")
             .off("click")
             .on("click", function () {

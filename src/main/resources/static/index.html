@@ -81,8 +81,12 @@
                 </div>
                 <div id="dialog-bottom" class="row">
                     <div class="col-4"></div>
-                    <div class="col dialog-center"><button type="button" class="dialog-button btn btn-success">OK</button></div>
-                    <div class="col dialog-center"><button type="button" class="dialog-button btn btn-danger">Cancel</button></div>
+                    <div class="col dialog-center">
+                        <button type="button" class="dialog-button btn rounded-pill btn-primary">OK</button>
+                    </div>
+                    <div class="col dialog-center">
+                        <button type="button" class="dialog-button btn rounded-pill btn-danger">Cancel</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,7 +104,7 @@
                     </div>
                 </div>
                 <div class="row text-center loading-bottom align-items-center">
-                    <p id="loading-text" class="fw-bold no-margin">Loading the data...</p>
+                    <p id="loading-text" class="fw-bold no-margin text-white">Loading the data...</p>
                 </div>
             </div>
         </div>
@@ -144,20 +148,22 @@
                 </div>
                 <div class="row form-div">
                     <div class="col-4"></div>
-                    <div class="col sts-btn-div"><button type="button" class="btn btn-success" id="btnStsApply">Apply</button></div>
-                    <div class="col sts-btn-div"><button type="button" class="btn btn-danger" id="btnStsCancel">Cancel</button></div>
+                    <div class="col sts-btn-div">
+                        <button type="button" class="btn rounded-pill btn-primary" id="btnStsApply">Apply</button>
+                    </div>
+                    <div class="col sts-btn-div">
+                        <button type="button" class="btn rounded-pill btn-danger" id="btnStsCancel">Cancel</button>
+                    </div>
                 </div>
             </form>
         </div>
         <!--content-->
-        <div class="mainpage" class="container">
-            <div class="row padding top-padding-3"></div>
-
+        <div class="mainpage container">
             <div id="div-demo" class="row text-center">
                 <div class="col">
-                    <h4 class="text-center title-h" id="title-demo">Demonstration</h4>
-                    <div class="card">
-                        <div class="card-body">
+                    <h2 class="text-center title-h" id="title-demo">Demonstration</h2>
+                    <div class="video-on">
+                        <div class="d-flex justify-content-between align-content-center">
                             <div class="video-overlay-div">
                                 <img name="strm" class="video-overlay-img" src="img/play-stream.png" />
                                 <img name="recog" class="video-overlay-img" src="img/play-recog.png" />
@@ -168,14 +174,18 @@
                             <video style="display: none" id="videoOutput" autoplay width="100%" poster="img/webrtc.png"></video>
                         </div>
                     </div>
-                    <div class="row text-center demo-menu">
-                        <div class="col">
-                            <button class="btn btn-success" id="btnStartPause">Start</button>
+                    <div class="row text-center demo-menu mt-3">
+                        <div class="col-7 d-flex gap-2 gap-md-3">
+                            <button class="btn btn-primary w-100 rounded-pill btn-s1 button-play" id="btnStartPause">
+                                <i class="bi bi-play-circle"></i><span>Start</span>
+                            </button>
                         </div>
-                        <div class="col">
-                            <button class="btn btn-danger" id="btnStop">Stop</button>
-                            <button class="btn btn-primary btn-sm" id="btnSettings"><i class="bi bi-gear-fill"></i></button>
-                            <button class="btn btn-secondary btn-sm" id="btnHelp"><i class="bi bi-question-lg"></i></button>
+                        <div class="col-5 d-flex gap-2 gap-md-3 justify-content-end">
+                            <button class="btn btn-danger w-100 rounded-pill btn-s1 button-stop" id="btnStop">
+                                <i class="bi bi-stop-circle"></i> <span>Stop</span>
+                            </button>
+                            <button class="btn-secondary rounded-pill" id="btnSettings"><i class="bi bi-sliders"></i></button>
+                            <button class="btn-secondary rounded-pill" id="btnHelp"><i class="bi bi-info-circle"></i></button>
                         </div>
                     </div>
                 </div>
@@ -183,7 +193,7 @@
 
             <div id="div-streamserver" class="row text-center">
                 <div class="col">
-                    <h4 class="text-center title-h" id="title-streamserver">Streaming Server</h4>
+                    <h2 class="text-center title-h" id="title-streamserver">Streaming Server</h2>
                     <div class="card">
                         <div class="card-body"></div>
                     </div>
@@ -191,7 +201,7 @@
             </div>
             <div class="row text-center">
                 <div class="col">
-                    <h4 class="text-center title-h" id="title-recogmodule">Recognition Module</h4>
+                    <h2 class="text-center title-h" id="title-recogmodule">Recognition Module</h2>
                     <div class="card">
                         <div class="card-body"></div>
                     </div>
@@ -200,7 +210,7 @@
 
             <div id="div-strmarch" class="row text-center">
                 <div class="col">
-                    <h4 class="text-center title-h" id="title-strmarch">Streaming Architecture</h4>
+                    <h2 class="text-center title-h" id="title-strmarch">Streaming Architecture</h2>
                     <div class="card">
                         <div class="card-body"></div>
                     </div>
@@ -208,7 +218,7 @@
             </div>
             <div class="row text-center">
                 <div class="col">
-                    <h4 class="text-center title-h" id="about">About</h4>
+                    <h2 class="text-center title-h" id="about">About</h2>
                     <div class="card">
                         <div class="card-body"></div>
                     </div>
@@ -216,8 +226,10 @@
             </div>
         </div>
 
-        <footer class="d-flex flex-wrap justify-content-center align-items-center py-3 my-4 border-top text-color-1">
-            <div class="col-md-4 d-flex align-items-center"></div>
+        <footer class="d-flex flex-wrap justify-content-center align-items-center py-3 my-4">
+            <div class="align-items-center">
+                <span>Online Object Detection </span>
+            </div>
         </footer>
     </body>
 </html>
