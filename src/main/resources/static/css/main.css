@@ -6,6 +6,7 @@
     --divider-color: rgba(131, 145, 165, 0.1);
     --main-background: #111316;
     --second-background: #1c1e20;
+    --third-background: #191d20;
 }
 
 .mainpage {
@@ -98,15 +99,10 @@ h2:before {
     left: 50%;
     transform: translate(-50%, -50%);
     max-width: 30rem;
-    min-height: 30vh;
     max-height: 60vh;
     border-radius: 5px;
     box-shadow: 1px 1px 10px 0px black;
     display: none;
-}
-
-#dialog-container {
-    min-height: 30vh;
 }
 
 #dialog-top {
@@ -479,3 +475,8 @@ input[type="range"]::-moz-range-thumb {
     border-color: #1cb5e0;
     color: var(--title-color-1);
 }
+
+.demo-menu-setting {
+    padding-left: 0;
+}
+
