@@ -480,3 +480,79 @@ input[type="range"]::-moz-range-thumb {
     padding-left: 0;
 }
 
+#divObjShow {
+    display: flex;
+    overflow: hidden;
+    width: 100%; /* Adjust as needed */
+    white-space: nowrap;
+    /* overflow: hidden; */
+    position: relative;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    background-color: var(--third-background);
+    border: 1px solid #1cb5e0;
+    border-radius: 5px;
+    box-shadow: inset 0px 0px 5px 5px black;
+    min-height: 5rem;
+
+    overflow-x: scroll;
+    &::-webkit-scrollbar {
+        height: 5px;
+    }
+
+    &::-webkit-scrollbar-button {
+        background: transparent;
+        width: 2px;
+    }
+
+    &::-webkit-scrollbar-track-piece,
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background-color: var(--title-color-1);
+        border: 1px solid var(--main-background);
+    }
+}
+
+#divObjWrapper::after {
+    content: "";
+    position: absolute;
+    right: 1px;
+    top: 4px;
+    height: 85%;
+    width: 5vw; /* Adjust the width of the gradient effect */
+    pointer-events: none;
+    background: linear-gradient(to right, rgba(17, 19, 22, 0), rgba(17, 19, 22, 1));
+    border-radius: 5px;
+}
+
+.objWrapper {
+    height: 4rem;
+    background-color: #1cb5e0;
+    margin-right: 0;
+    margin-top: 6px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    margin-left: 6px;
+    padding: 4px;
+    opacity: 0;
+}
+
+.objIns {
+    height: 2.2rem;
+    background-color: #1cb5e0;
+    border-radius: 10px;
+    width: 4rem;
+}
+
+.objImg {
+    /* display: block; */
+    height: 100%;
+    object-fit: contain;
+    width: auto;
+    display: inline-block;
+    vertical-align: top;
+}

@@ -26,6 +26,15 @@ public class DefaultConfiguration {
     @Value("${turn.static-auth-secret}")
     public String TURN_STATIC_AUTH_SECRET;
 
+    @Value("${objdet.detectedbox.speed.millisec}")
+    public int OBJDET_DETECTEDBOX_SPEED_MILLISEC;
+
+    @Value("${objdet.detectedbox.distinct}")
+    public boolean OBJDET_DETECTEDBOX_DISTINCT;
+
+    @Value("${objdet.detectedbox.distinct.pixel}")
+    public int OBJDET_DETECTEDBOX_DISTINCT_PIXEL;
+
     @Bean
     public KurentoClient kurento() {
         return KurentoClient.create(KMS_URL);

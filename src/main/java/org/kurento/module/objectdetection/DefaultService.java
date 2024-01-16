@@ -132,6 +132,8 @@ public class DefaultService {
         UserSession user = users.get(session.getId());
         if (jsonMessage.get("sw").getAsString().equals("true")) {
             user.getObjdet().startInferring();
+            long timestamp = System.currentTimeMillis();
+            user.setDetBoxTimeStp(timestamp);
             log.debug("{}: signal start inferring to KMS", session.getId());
         } else {
             user.getObjdet().stopInferring();
@@ -330,6 +332,39 @@ public class DefaultService {
             modelNames.addProperty("id", "modelNames");
             modelNames.add("names", jsonObj);
             sendMessage(session, modelNames.toString());
+        });
+
+        objDetFilter.addboxDetectedListener(event -> {
+            UserSession user = users.get(session.getId());
+
+            synchronized (user) {
+
+                long timestamp = System.currentTimeMillis();
+                if (timestamp - user.getDetBoxTimeStp() < configuration.OBJDET_DETECTEDBOX_SPEED_MILLISEC) {
+                    return;
+                }
+                user.setDetBoxTimeStp(timestamp);
+                log.debug("{}: box detected: {}", session.getId(), event.getObjectJSON());
+                JsonObject message = new JsonObject();
+                message.addProperty("id", "boxDetected");
+                String data = "";
+                if (configuration.OBJDET_DETECTEDBOX_DISTINCT == true) {
+                    log.debug("{}: box detected: distinct check", session.getId());
+                    ModelObj[] objs = gson.fromJson(event.getObjectJSON(), ModelObj[].class);
+                    if (user.getLastBoxes() != null) {
+                        ModelObj[] lastObjs = user.getLastBoxes();
+                        data = gson.toJson(utils.distinctObjs(lastObjs, objs));
+                    } else {
+                        data = event.getObjectJSON();
+                    }
+                    user.setLastBoxes(objs);
+                } else {
+                    data = event.getObjectJSON();
+                }
+                message.addProperty("data", data);
+                sendMessage(session, message.toString());
+            }
+
         });
 
     }

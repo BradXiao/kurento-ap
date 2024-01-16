@@ -102,6 +102,8 @@ export function init() {
     });
     ////others
     initStsRange();
+    clearObjs();
+    $("#divObjShow").hide();
 }
 
 export async function showLoading(msg = "") {
@@ -293,6 +295,30 @@ export function setStrmOverlay(ttype) {
     } else {
         console.error("unknown strm overlay");
     }
+}
+
+export function clearObjs() {
+    $("#divObjShow").empty();
+}
+
+export async function insertObj(objName) {
+    const totalObjs = $("#divObjShow").children().length;
+    if (totalObjs > 100) {
+        $("#divObjShow")
+            .children(":gt(" + 10 + ")")
+            .remove();
+    }
+
+    $("#divObjShow").prepend(` <div class="objWrapper">
+    <div  class="objIns"><img class="objImg" src="img/${objName.replace(" ", "")}.png" /></div>
+    <div><small><span class="text-capitalize font-monospace">${objName}</span></small></div>
+    </div>`);
+    $("#divObjShow > div:first").eq(0).show("fast");
+    gsap.to($("#divObjShow > div:first")[0], {
+        duration: 1,
+        opacity: 1,
+    });
+    await utils.sleep(700);
 }
 
 function initStsRange() {

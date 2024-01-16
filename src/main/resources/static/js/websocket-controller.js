@@ -46,6 +46,9 @@ export class Controller {
             case "settings":
                 self.#service.handleSettings(parsedMessage);
                 break;
+            case "boxDetected":
+                self.#service.handleBoxDetected(parsedMessage);
+                break;
             case "error":
                 self.#service.handleError(parsedMessage.message);
                 self.destroy();

@@ -22,6 +22,8 @@ public class UserSession {
   private boolean isDrawing = true;
   private String relayServer = "default";
   private String displayMode = "remote";
+  private long detBoxTimeStp = 0;
+  private ModelObj[] lastBoxes = null;
 
   public String getSdpOffer() {
     return sdpOffer;
@@ -140,6 +142,22 @@ public class UserSession {
 
   public void setDrawing(boolean isDrawing) {
     this.isDrawing = isDrawing;
+  }
+
+  public long getDetBoxTimeStp() {
+    return detBoxTimeStp;
+  }
+
+  public void setDetBoxTimeStp(long detBoxTimeStp) {
+    this.detBoxTimeStp = detBoxTimeStp;
+  }
+
+  public ModelObj[] getLastBoxes() {
+    return lastBoxes;
+  }
+
+  public void setLastBoxes(ModelObj[] lastBoxes) {
+    this.lastBoxes = lastBoxes;
   }
 
   public void destroy() {

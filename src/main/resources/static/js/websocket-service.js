@@ -143,6 +143,7 @@ export class Service {
     async #startStreaming() {
         console.log("start");
         await ui.showLoading("Prepare streaming...");
+        ui.clearObjs();
         let config;
         if (this.#platform.os === "iOS") {
             config = {
@@ -306,6 +307,20 @@ export class Service {
 
         if ($("#settings").is(":visible") !== true) {
             ui.hideLoading();
+            if ($("#divObjShow").is(":visible") == false) {
+                $("#divObjShow").css("min-height", "0").show();
+                gsap.to("#divObjShow", {
+                    "min-height": "5rem",
+                    duration: 1,
+                });
+            }
+        }
+    }
+
+    async handleBoxDetected(parsedMessage) {
+        const boxes = JSON.parse(parsedMessage.data);
+        for (let i = 0; i < boxes.length; i += 1) {
+            await ui.insertObj(boxes[i].name);
         }
     }
 
