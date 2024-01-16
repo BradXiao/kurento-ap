@@ -43,7 +43,7 @@ export function init() {
             });
         });
     ////content ani
-    $(".mainpage > div:not(.padding) > div").each(function () {
+    $(".mainpage > div[id!=div-demo] > div").each(function () {
         $(this)
             .find(">*:not(h2)")
             .each(function () {
@@ -57,7 +57,16 @@ export function init() {
                 revealTimeline.fromTo(this, { y: 70, opacity: 0.1 }, { y: 0, opacity: 1, duration: 0.9, ease: "power4.out" });
             });
     });
-
+    gsap.fromTo(
+        "#div-demo",
+        {
+            opacity: 0.1,
+        },
+        {
+            opacity: 1,
+            duration: 2,
+        }
+    );
     ////dialog icon ani
     dialogIconAni = gsap.timeline({ repeat: -1 });
     $("#dialog-top")
