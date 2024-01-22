@@ -64,7 +64,7 @@ export function init() {
         },
         {
             opacity: 1,
-            duration: 2,
+            duration: 1.5,
         }
     );
     ////dialog icon ani

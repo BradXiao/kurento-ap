@@ -7,6 +7,7 @@
     --main-background: #111316;
     --second-background: #1c1e20;
     --third-background: #191d20;
+    --code-background: #0d181a;
 }
 
 .mainpage {
@@ -67,12 +68,11 @@ h2:after,
 h2:before {
     content: " ";
     display: block;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--title-color-1);
 }
 
 .title-h {
     color: var(--title-color-1);
-    border-bottom: solid 1px var(--title-color-1);
     margin-bottom: 1rem;
     margin-top: 1rem;
 }
@@ -101,7 +101,7 @@ h2:before {
     max-width: 30rem;
     max-height: 60vh;
     border-radius: 5px;
-    box-shadow: 1px 1px 10px 0px black;
+    box-shadow: 0px 0px 3px 0px var(--title-color-1);
     display: none;
 }
 
@@ -245,6 +245,9 @@ h2:before {
 footer {
     border-top: 1px solid var(--border-color);
     color: var(--title-color-1);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    padding-top: 0.5rem;
 }
 
 footer span,
@@ -252,6 +255,7 @@ footer i {
     margin: 0 0.5rem;
     display: inline-block;
     color: var(--secondary-color);
+    font-size: smaller;
 }
 
 footer i {
@@ -271,6 +275,22 @@ footer i {
     /* mobile*/
     .dialog-top-icon-div {
         display: none !important;
+    }
+}
+
+@media only screen and (max-width: 450px) {
+    /* mobile*/
+    .div-mobile-width-100 {
+        min-width: 100%;
+    }
+
+    .div-mobile-col-2 {
+        flex: 0 0 auto;
+        width: 25%;
+    }
+
+    .div-mobile-people {
+        margin-bottom: 1rem;
     }
 }
 
@@ -355,7 +375,7 @@ footer i {
     max-width: 30rem;
     min-height: 30vh;
     border-radius: 5px;
-    box-shadow: 1px 1px 10px 0px black;
+    box-shadow: 0px 0px 3px 0px var(--title-color-1);
     display: none;
 }
 
@@ -555,4 +575,143 @@ input[type="range"]::-moz-range-thumb {
     width: auto;
     display: inline-block;
     vertical-align: top;
+}
+
+.secondary-color {
+    color: var(--secondary-color);
+}
+
+h5 {
+    font-size: 1.15rem;
+    padding: 0.6rem 0;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-top: 1rem;
+    margin-bottom: 0;
+}
+
+.bi-link-45deg {
+    font-size: smaller;
+}
+
+.badge-mark {
+    transform: translate(0%, -40%) !important;
+    font-size: x-small;
+}
+
+.ul-download-link {
+    margin-top: 1rem;
+}
+
+pre code {
+    background-color: var(--code-background);
+    border: 1px solid #999;
+    display: block;
+    padding: 15px;
+}
+
+.div-warn {
+    border-left: 0.3rem solid;
+    border-left-color: darkred;
+    font-size: smaller;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.div-warn-sign {
+    color: darkred;
+    font-size: larger;
+    letter-spacing: 1px;
+}
+
+.div-info {
+    border-left: 0.3rem solid;
+    border-left-color: #ffc107;
+    font-size: smaller;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.div-info-sign {
+    color: #ffc107;
+    font-size: larger;
+    letter-spacing: 1px;
+}
+
+quote {
+    background-color: #0c2a33;
+    color: var(--title-color-1);
+    padding: 0.2rem;
+    font-size: small;
+    border-radius: 5px;
+}
+
+.img-people {
+    border-radius: 50%;
+    display: block;
+    width: 100%;
+    border: 2px solid #1cb5e0;
+    box-shadow: 2px 2px 5px 0px black;
+}
+
+.div-grid {
+    display: grid;
+}
+
+.span-name {
+    display: block;
+    font-size: large;
+    line-height: 1.6rem;
+}
+
+.zero-pad {
+    padding: 0;
+}
+
+.span-skill {
+    line-height: 15px;
+    display: block;
+    font-size: small;
+}
+
+.img-div-fit {
+    display: block;
+    width: 100%;
+    border: 2px solid #1cb5e0;
+    border-radius: 10px;
+    box-shadow: 1px 1px 3px 1px black;
+}
+
+.div-left {
+    padding-right: calc(var(--bs-gutter-x) * 0.375);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.div-right {
+    padding-left: calc(var(--bs-gutter-x) * 0.375);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+ol li::marker,
+li {
+    color: #86b7fe;
+}
+
+.ol-list {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding-left: 1.2rem;
+}
+
+.img-padding {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
