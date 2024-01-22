@@ -22,7 +22,6 @@ export class Service {
         self = this;
         this.#ws = ws;
         this.#initComponents();
-        this.#initWebcams();
         this.#platform = utils.getPlatform();
     }
 
@@ -142,6 +141,8 @@ export class Service {
 
     async #startStreaming() {
         console.log("start");
+        await ui.showLoading("Webcam initializing...");
+        await self.#initWebcams();
         await ui.showLoading("Prepare streaming...");
         ui.clearObjs();
         let config;

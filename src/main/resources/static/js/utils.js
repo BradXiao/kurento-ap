@@ -52,6 +52,13 @@ export function getPlatform() {
 
 export async function getWebcams() {
     try {
+        // iOS needs to call getUserMedia to get all webcams
+        const constraints = {
+            audio: false,
+            video: true,
+        };
+        await navigator.mediaDevices.getUserMedia(constraints);
+
         const deviceInfos = await navigator.mediaDevices.enumerateDevices();
         // Handles being called several times to update labels. Preserve values.
         var devices = [];
