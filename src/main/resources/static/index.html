@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Object Detection for Online Streaming</title>
+        <title>Realtime Object Detection x WebRTC</title>
         <meta http-equiv="cache-control" content="no-cache" />
         <meta http-equiv="pragma" content="no-cache" />
         <meta http-equiv="expires" content="0" />
@@ -28,7 +28,7 @@
                 <div class="align-items-center d-flex me-5">
                     <img class="navbar-icon" src="img/recognition.png" />
                     <div>
-                        <a class="header-title">Online Object Detection</a>
+                        <a class="header-title">Realtime Object Detection</a>
                     </div>
                 </div>
                 <button
@@ -47,19 +47,22 @@
                 <div class="collapse navbar-collapse navbar-menu navbar-menu-height" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 navbar-menu-items">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#title-demo">Demonstration</a>
+                            <a class="nav-link active" href="#title-demo">Live Demonstration</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#title-streamserver">Streaming Server</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#title-recogmodule">Recognition Module</a>
+                            <a class="nav-link" href="#title-recogmodule">Artificial Intelligence Module</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#title-strmarch">Streaming Architecture</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#about">About</a>
+                            <a class="nav-link" href="#title-streamserver">Streaming Server</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#title-download">Download / Installation</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about">About / Credits</a>
                         </li>
                     </ul>
                 </div>
@@ -168,7 +171,7 @@
         <div class="mainpage container">
             <div id="div-demo" class="row text-center">
                 <div class="col">
-                    <h2 class="text-center title-h" id="title-demo">Demonstration</h2>
+                    <h2 class="text-center title-h" id="title-demo">Live Demonstration</h2>
                     <div class="video-on">
                         <div class="d-flex justify-content-between align-content-center">
                             <div class="video-overlay-div">
@@ -215,36 +218,443 @@
                 </div>
             </div>
 
-            <div id="div-streamserver" class="row text-center">
-                <div class="col">
-                    <h2 class="text-center title-h" id="title-streamserver">Streaming Server</h2>
-                    <div class="card">
-                        <div class="card-body"></div>
-                    </div>
-                </div>
-            </div>
             <div class="row text-center">
                 <div class="col">
-                    <h2 class="text-center title-h" id="title-recogmodule">Recognition Module</h2>
+                    <h2 class="text-center title-h" id="title-recogmodule">AI Module</h2>
                     <div class="card">
-                        <div class="card-body"></div>
+                        <div class="card-body">
+                            <h5>Overview</h5>
+                            In the media stream server, every application or process can be considered as a module. The AI module, in
+                            this demo, is object detection. The following chart shows an overview of how the media stream flows in and
+                            out of the module.
+                            <img class="img-padding" width="100%" src="img/module.png" />
+                            Input streaming can be interpreted as a sequence of images arranged in a continuous stack.  So the AI
+                            module processes one image at a time.
+                            <ol class="ol-list">
+                                <li>
+                                    Control: after the user presses start button, the web appplication backend sets up streaming
+                                    parameters and starts streaming
+                                </li>
+                                <li>Stream In: images are captured from user's webcam and sent to the stream server</li>
+                                <li>Inference: images flow from media server to AI module for object detection</li>
+                                <li>Stream Out: the defected object boxes are drawn on the images and sent back to the browser</li>
+                            </ol>
+                            <h5>AI Module Core</h5>
+                            Let's take a closer look at the AI module. The following list shows how exactly the images are processed. 
+                            <img class="img-padding" width="100%" src="img/models.png" />
+                            <ol class="ol-list">
+                                <li>An image from the streaming flows into the model pool</li>
+                                <li>The image is assigned to a session-dedicated model wrapper in the model pool</li>
+                                <li>
+                                    The image is preproccessed, fed into the model, and the raw outputs are processed
+                                    <ol type="a">
+                                        <li>Preprocess: image resize, letterboxing, channel conversion</li>
+                                        <li>TensorRT: infer using a TensorRT model</li>
+                                        <li>Postprocess: object coordinates, confidence values conversion</li>
+                                    </ol>
+                                </li>
+                                <li>Draw detected object boxes on the input image</li>
+                                <li>The drawn image is sent back to the user</li>
+                            </ol>
+                            To keep simplicity, several details are ignored. Go to the download section to view the source code for
+                            more information.
+                        </div>
                     </div>
                 </div>
             </div>
-
             <div id="div-strmarch" class="row text-center">
                 <div class="col">
                     <h2 class="text-center title-h" id="title-strmarch">Streaming Architecture</h2>
                     <div class="card">
-                        <div class="card-body"></div>
+                        <div class="card-body">
+                            The media steam server in this demo is deployed in the intranet, so an additional media relay server is
+                            needed. The full name of the media stream server is <quote>Kurento Media Server</quote>, abbreviated as
+                            <quote>KMS</quote>, where the AI module is installed.
+
+                            <h5>Network Architecture</h5>
+
+                            The following chart is the network architecture and the list shows the procedure of how this demo
+                            application runs.
+
+                            <img class="img-padding" width="100%" src="img/architecture.png" />
+                            <ol class="ol-list">
+                                <li>A user connects to the website and click start streaming</li>
+                                <li>Web application backend creates a session for the user</li>
+                                <li>Stream server initializes the AI module and obtains a TensorRT model</li>
+                                <li>The streaming flows from user's webcam to relay server</li>
+                                <li>The streaming flows to the stream server</li>
+                                <li>
+                                    The streaming flows to object detection module for processing<br />After processing, the streaming
+                                    then flows from 6 to 5, from 5 to 4 and back to the user.
+                                </li>
+                                <li>and 8. This path is an alternative path (alternative relay server) for 4. and 5.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="div-streamserver" class="row text-center">
+                <div class="col">
+                    <h2 class="text-center title-h" id="title-streamserver">Streaming Server</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Streaming Server</h5>
+
+                            The stream server, <quote>Kurento Media Server(KMS)</quote>, is a open-source multimedia server package
+                            based on WebRtc. It is able to send/receive/process any streams from any directions. Common applications,
+                            such as video and audio conferencing, live streaming, etc.
+                            <div class="row img-padding">
+                                <div class="col div-left"><img class="img-div-fit" src="img/onlinestream.jpg" /></div>
+                                <div class="col div-right"><img class="img-div-fit" src="img/onlineidentification.jpg" /></div>
+                            </div>
+                            <h5>Modules</h5>
+                            Custom modules are available in the media server. If AI models are combined with it, it can create more
+                            applications such as object detection, face recognition, face validation, document analysis, text
+                            recognition, etc.
+                            <div class="row img-padding">
+                                <div class="col div-right"><img class="img-div-fit" src="img/onlineOCR.jpg" /></div>
+                                <div class="col div-right"><img class="img-div-fit" src="img/onlinedetection.jpg" /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="div-download" class="row text-center">
+                <div class="col">
+                    <h2 class="text-center title-h" id="title-download">Download / Installation</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            The entire system can be divided into five parts. Most of them provide both pre-built binaries and source
+                            code.
+
+                            <h5>1. Kurento Streaming Server (KMS)</h5>
+                            Currently (January 2024), the latest version is 7.0.1 and the official supported operating system is
+                            <quote>Ubuntu 20.04 (Focal) (64-bits)</quote>. They also provide other installation methods such as docker
+                            image. Here is the official guide.
+
+                            <ul class="ul-download-link">
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://doc-kurento.readthedocs.io/en/latest/user/installation.html"
+                                        target="_blank"
+                                        >Installation Guide - Kurento<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                            </ul>
+                            If your operating system is <quote>Ubuntu 22.04 (64-bits)</quote>, which is not officially supported, it
+                            may not work properly according to my test. You could build everything on your own or download pre-built
+                            one on my GitHub.
+
+                            <ul class="ul-download-link">
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://github.com/BradXiao/kurento-ubuntu/releases/tag/v7.0.2"
+                                        target="_blank"
+                                        >Kurento 7.0.1 for Ubuntu 22.04<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                            </ul>
+                            Note that some older libraries have been used in the pre-built binaries to make it work properly on the
+                            newer operating system.
+
+                            <div class="div-warn">
+                                <div class="div-warn-sign"><i class="bi bi-exclamation-triangle"></i> Warning</div>
+                                These outdated libraries might introduce potential security vulnerabilities or bugs.
+                            </div>
+
+                            <h5>2. AI Module</h5>
+                            The module is designed to load a fixed number of models into VRAM when the stream server starts, and these
+                            models are wrapped in a model pool.When a user session is created, a model wrapper from the pool is
+                            assigned to the session for dedicated use.
+
+                            <ul class="ul-download-link">
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://github.com/BradXiao/kurento-module"
+                                        target="_blank"
+                                        >Object Detection Module<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                            </ul>
+
+                            <div class="div-info">
+                                <div class="div-info-sign"><i class="bi bi-info-square"></i> Note</div>
+                                Current approach ensures optimal performance and user experience. However, it could limit the maximum
+                                number of concurrent users online.
+                                <br />
+                                <br />
+                                An alternative method involves assigning images to random model wrappers at a time for recognition,
+                                instead of continuously occupying a single model wrapper.
+                            </div>
+
+                            <h5>3. Model</h5>
+                            The object detection neural network used in this demo is YOLOv7. Only the <quote>YOLOv7-W6</quote>,
+                            <quote>YOLOv7</quote> and <quote>YOLOv7-tiny</quote> models are showcased. Remember to convert the models
+                            to TensorRT format. Since the model is dedicated to GPU use, it is not provided. You will need to build it
+                            on your own machine.
+
+                            <ul class="ul-download-link">
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://github.com/WongKinYiu/yolov7"
+                                        target="_blank"
+                                        >YOLOv7<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                            </ul>
+                            Some other necessary GPU-related libraries:
+                            <ul class="ul-download-link">
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://developer.nvidia.com/cuda-downloads"
+                                        target="_blank"
+                                        >CUDA Toolkit<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://developer.nvidia.com/cudnn"
+                                        target="_blank"
+                                        >cuDNN<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://developer.nvidia.com/tensorrt"
+                                        target="_blank"
+                                        >tensorRT<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                            </ul>
+                            <h5>4. Web Application</h5>
+                            There are two kinds of auto-generated client libraries produced during the module build process: Java and
+                            Javascript. In this demo, the Java client library is used, combined with Spring Boot as the backend
+                            framework.
+                            <ul class="ul-download-link">
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://github.com/BradXiao/kurento-ap"
+                                        target="_blank"
+                                        >Web Application<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                            </ul>
+
+                            <h5>5. Relay Server <span class="badge text-bg-light badge-mark">Optional</span></h5>
+                            Whether to use relay server depends on your network architecture. In this demo, since the stream server is
+                            behind the DMZ within the intranet, so a TURN server is deployed. The TURN server typically includes STUN
+                            server which in some cases will be used.
+
+                            <ul class="ul-download-link">
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://github.com/coturn/coturn"
+                                        target="_blank"
+                                        >Coturn<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://doc-kurento.readthedocs.io/en/latest/user/faq.html#nat-ice-stun-turn"
+                                        target="_blank"
+                                        >STUN/TURN Documentation - Kurento<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                            </ul>
+                            If your operating system is Ubuntu, coturn can be installed via apt.
+                            <br />
+                            <pre><code>apt update&#13;&#10;apt intall coturn</code></pre>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="row text-center">
                 <div class="col">
-                    <h2 class="text-center title-h" id="about">About</h2>
+                    <h2 class="text-center title-h" id="about">About / Credits</h2>
                     <div class="card">
-                        <div class="card-body"></div>
+                        <div class="card-body">
+                            <h5>Our Team</h5>
+                            <div class="row">
+                                <div class="col div-mobile-width-100 div-mobile-people">
+                                    <div class="row div-mobile-width-100">
+                                        <div class="col-4 div-mobile-col-2 justify-content-center align-items-center div-grid">
+                                            <img class="img-people" src="" />
+                                        </div>
+                                        <div class="col zero-pad align-content-center div-grid">
+                                            <span class="fw-bold span-name"
+                                                >People 1
+                                                </span>
+                                            <span class="font-monospace span-skill">Description a</span>
+                                            <span class="font-monospace span-skill">Description b</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col div-mobile-width-100 div-mobile-people">
+                                    <div class="row div-mobile-width-100">
+                                        <div class="col-4 div-mobile-col-2 justify-content-center align-items-center div-grid">
+                                            <img class="img-people" src="" />
+                                        </div>
+                                        <div class="col zero-pad align-content-center div-grid">
+                                            <span class="fw-bold span-name">People 2</span>
+                                            <span class="font-monospace span-skill">Description a</span>
+                                            <span class="font-monospace span-skill">Description b</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h5>Credits</h5>
+                            <ul class="ul-download-link">
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://github.com/hewen0901/yolov7_trt"
+                                        target="_blank"
+                                        >yolov7_trt<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://github.com/triple-Mu/YOLOv8-TensorRT"
+                                        target="_blank"
+                                        >YOLOv8-TensorRT<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                                <li>
+                                    <a
+                                        class="link-info link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover"
+                                        href="https://www.bing.com/images/create"
+                                        target="_blank"
+                                        >Image Creator from Microsoft Designer<i class="bi bi bi-link-45deg"></i
+                                    ></a>
+                                </li>
+                                <li>
+                                    <a
+                                        class="link-info"
+                                        data-bs-toggle="collapse"
+                                        href="#creidts-icon-list"
+                                        onclick="$(this).parent().hide()"
+                                        aria-expanded="false"
+                                        aria-controls="creidts-icon-list"
+                                        >Icons from Flaticon (click to show complete list)</a
+                                    >
+                                </li>
+                                <div class="collapse" id="creidts-icon-list">
+                                    <li>Info icons created by Anggara</li>
+                                    <li>Exclamation mark icons created by Good Ware</li>
+                                    <li>Motorcycle icons created by sonnycandra</li>
+                                    <li>Info icons created by Anggara</li>
+                                    <li>Exclamation mark icons created by Good Ware</li>
+                                    <li>Motorcycle icons created by sonnycandra</li>
+                                    <li>Error icons created by juicy_fish</li>
+                                    <li>Play icons created by Freepik</li>
+                                    <li>Cargo truck icons created by Chanut-is-Industries</li>
+                                    <li>Bike icons created by Freepik</li>
+                                    <li>Train icons created by Google</li>
+                                    <li>Car icons created by fjstudio</li>
+                                    <li>Car icons created by Freepik</li>
+                                    <li>Bus icons created by Hight Quality Icons</li>
+                                    <li>Person icons created by Ilham Fitrotul Hayat</li>
+                                    <li>Plane icons created by Freepik</li>
+                                    <li>Stop icons created by Sakipa</li>
+                                    <li>Boat icons created by Freepik</li>
+                                    <li>Traffic light icons created by Ayub Irawan</li>
+                                    <li>Hydrant icons created by Freepik</li>
+                                    <li>Street sign icons created by Wira Stocker</li>
+                                    <li>Stop icons created by Freepik</li>
+                                    <li>Meter icons created by Freepik</li>
+                                    <li>Bench icons created by Pixel perfect</li>
+                                    <li>Bird icons created by Freepik</li>
+                                    <li>Black cat icons created by PLANBSTUDIO</li>
+                                    <li>Dog icons created by Freepik</li>
+                                    <li>Slow icons created by Freepik</li>
+                                    <li>Sheep icons created by Freepik</li>
+                                    <li>Cow icons created by Freepik</li>
+                                    <li>Elephant icons created by Freepik</li>
+                                    <li>Zoo icons created by Freepik</li>
+                                    <li>Zebra icons created by Freepik</li>
+                                    <li>Giraffe icons created by surang</li>
+                                    <li>Backpack icons created by apien</li>
+                                    <li>Umbrella icons created by Freepik</li>
+                                    <li>Handbag icons created by Freepik</li>
+                                    <li>Accessory icons created by VectorPortal</li>
+                                    <li>Suitcase icons created by Job Moon</li>
+                                    <li>Frisbee icons created by Smashicons</li>
+                                    <li>Ski equipment icons created by Aranagraphics</li>
+                                    <li>Snowboard icons created by Fliqqer</li>
+                                    <li>Sport icons created by small.smiles</li>
+                                    <li>Kite icons created by Stockio</li>
+                                    <li>Baseball bat icons created by Icongeek26</li>
+                                    <li>Baseball glove icons created by Freepik</li>
+                                    <li>Skateboard icons created by Smashicons</li>
+                                    <li>Surfboard icons created by bqlqn</li>
+                                    <li>Tennis icons created by Freepik</li>
+                                    <li>Bottle icons created by Pixel perfect</li>
+                                    <li>Wine icons created by Mark1987</li>
+                                    <li>Cup icons created by Freepik</li>
+                                    <li>Fork icons created by Roundicons</li>
+                                    <li>Knife icons created by Freepik</li>
+                                    <li>Spoon icons created by Roundicons</li>
+                                    <li>Rice icons created by Mayor Icons</li>
+                                    <li>Food and restaurant icons created by Freepik</li>
+                                    <li>Food and restaurant icons created by Smashicons</li>
+                                    <li>Orange icons created by Smashicons</li>
+                                    <li>Broccoli icons created by Vitaly Gorbachev</li>
+                                    <li>Carrot icons created by Freepik</li>
+                                    <li>Snack icons created by Mayor Icons</li>
+                                    <li>Hot dog icons created by Freepik</li>
+                                    <li>Pizza icons created by Freepik</li>
+                                    <li>Donut icons created by Freepik</li>
+                                    <li>Cake icons created by Nanda Bean</li>
+                                    <li>Chair icons created by apien</li>
+                                    <li>Couch icons created by Buandesign</li>
+                                    <li>Flower pot icons created by Tanah Basah</li>
+                                    <li>Bed icons created by Cursor Creative</li>
+                                    <li>Table icons created by Freepik</li>
+                                    <li>Furniture and household icons created by afif fudin</li>
+                                    <li>Monitor icons created by Freepik</li>
+                                    <li>Device icons created by Syahrul Hidayatullah</li>
+                                    <li>Computer mouse icons created by Ifanicon</li>
+                                    <li>Remote control icons created by Freepik</li>
+                                    <li>Hardware icons created by Stockes Design</li>
+                                    <li>Iphone icons created by Maxim Basinski Premium</li>
+                                    <li>Microwave icons created by VectorPortal</li>
+                                    <li>Oven icons created by Freepik</li>
+                                    <li>Toaster icons created by VectorPortal</li>
+                                    <li>Sink icons created by Smashicons</li>
+                                    <li>Refrigerator icons created by Irfansusanto20</li>
+                                    <li>Book icons created by Freepik</li>
+                                    <li>Clock icons created by Freepik</li>
+                                    <li>Vase icons created by kerismaker</li>
+                                    <li>Scissors icons created by Freepik</li>
+                                    <li>Teddy bear icons created by CapVora</li>
+                                    <li>Hair dryer icons created by Freepik</li>
+                                    <li>Toothbrush icons created by nawicon</li>
+                                    <li>Object icons created by Uniconlabs</li>
+                                    <li>User icons created by Freepik</li>
+                                    <li>Server icons created by vectorsmarket15</li>
+                                    <li>Database icons created by Freepik</li>
+                                    <li>Desktop icons created by fjstudio</li>
+                                    <li>Neural network icons created by Flat Icons</li>
+                                    <li>Image icons created by Kiranshastry</li>
+                                    <li>Crate icons created by smashingstocks</li>
+                                    <li>Process icons created by Freepik</li>
+                                </div>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -252,7 +662,9 @@
 
         <footer class="d-flex flex-wrap justify-content-center align-items-center">
             <div class="align-items-center">
-                <span>Online Object Detection </span>
+                <span class="text-center font-monospace"
+                    >Realtime Object Detection<i class="secondary-color bi bi-crosshair"></i>WebRTC</span
+                >
             </div>
         </footer>
     </body>
