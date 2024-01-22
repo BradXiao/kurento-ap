@@ -155,19 +155,43 @@ h2:before {
     text-align: left;
 }
 
-/* border shine */
 .video-on {
-    padding: 0.5rem;
-    --border-size: 3px;
-    --border-angle: 0turn;
-    width: 100%;
-    background-image: conic-gradient(from var(--border-angle), #213, #112 50%, #213),
-        conic-gradient(from var(--border-angle), transparent 15%, rgb(0, 125, 197), rgb(148, 16, 60));
-    background-size: calc(100% - (var(--border-size) * 2)) calc(100% - (var(--border-size) * 2)), cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    -webkit-animation: bg-spin 5s linear infinite;
-    animation: bg-spin 5s linear infinite;
+    --border-width: 3px;
+    position: relative;
+    color: white;
+    background: #222;
+    border-radius: var(--border-width);
+
+    &::after {
+        position: absolute;
+        content: "";
+        top: calc(-1 * var(--border-width));
+        left: calc(-1 * var(--border-width));
+        z-index: -1;
+        width: calc(100% + var(--border-width) * 2);
+        height: calc(100% + var(--border-width) * 2);
+        background: linear-gradient(
+            60deg,
+            hsl(224, 85%, 66%),
+            hsl(269, 85%, 66%),
+            hsl(314, 85%, 66%),
+            hsl(359, 85%, 66%),
+            hsl(44, 85%, 66%),
+            hsl(89, 85%, 66%),
+            hsl(134, 85%, 66%),
+            hsl(179, 85%, 66%)
+        );
+        background-size: 300% 300%;
+        background-position: 0 50%;
+        border-radius: calc(2 * var(--border-width));
+        animation: moveGradient 2s alternate infinite;
+    }
+}
+
+@keyframes moveGradient {
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 .btn-primary span {
@@ -187,24 +211,6 @@ h2:before {
 .btn-dark {
     background: linear-gradient(-45deg, #292e31, #606468);
     border: 0;
-}
-
-@-webkit-keyframes bg-spin {
-    to {
-        --border-angle: 1turn;
-    }
-}
-
-@keyframes bg-spin {
-    to {
-        --border-angle: 1turn;
-    }
-}
-
-@property --border-angle {
-    syntax: "<angle>";
-    inherits: true;
-    initial-value: 0turn;
 }
 
 /* btn style*/

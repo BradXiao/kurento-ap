@@ -10,8 +10,6 @@ window.onload = function () {
         ui.showMessage("The demo is currently only supported on Windows, Android and iOS.", null, "error");
     } else if (plat.os === "iOS" && plat.browser === "chrome") {
         ui.showMessage("The demo currently only supports Safari on iOS.", null, "error");
-    } else if (plat.browser === "firefox") {
-        ui.showMessage("The demo currently only supports Chrome and Safari.", null, "error");
     }
 };
 
