@@ -117,13 +117,14 @@ export class Service {
 
     #startPauseStreaming() {
         if (self.#platform.os === "MacOS") {
-            ui.showMessage("The demo is currently only supported on Windows, Android and iOS. The demo will not work.", null, "error");
+            ui.showMessage(
+                "Oops! The demo is currently only supported on Windows, Android and iOS. The demo will not work.",
+                null,
+                "error"
+            );
             return;
-        } else if (self.#platform.os === "iOS" && self.#platform.browser === "chrome") {
-            ui.showMessage("The demo currently only supports Safari on iOS. The demo will not work.", null, "error");
-            return;
-        } else if (self.#defaultDeviceId === null) {
-            ui.showMessage("No video source is available. The demo will not work.", null, "error");
+        } else if (self.#platform.browser === "firefox") {
+            ui.showMessage("Oops! The demo is currently only supported on Chrome and Safari.", null, "error");
             return;
         }
 
@@ -146,7 +147,7 @@ export class Service {
         await ui.showLoading("Prepare streaming...");
         ui.clearObjs();
         let config;
-        if (this.#platform.os === "iOS") {
+        if (this.#platform.os === "iOS" || this.#platform.browser === "firefox") {
             config = {
                 iceServers: [
                     {
