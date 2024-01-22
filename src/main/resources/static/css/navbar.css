@@ -45,9 +45,6 @@
 
 @media only screen and (min-width: 992px) {
     /* desktop*/
-    .navbar-menu-height {
-        height: 1.5rem;
-    }
 
     .nav-link {
         border-bottom: 0 solid var(--divider-color);
