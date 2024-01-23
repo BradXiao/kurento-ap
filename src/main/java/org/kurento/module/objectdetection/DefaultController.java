@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,9 @@ public class DefaultController implements ApplicationContextAware {
     private static final Gson gson = new GsonBuilder().create();
     private static final Logger log = LoggerFactory.getLogger(DefaultController.class);
 
+    @Autowired
+    private Utils utils;
+
     private Session session;
     private DefaultService service;
 
@@ -45,60 +49,69 @@ public class DefaultController implements ApplicationContextAware {
 
         JsonObject jsonMessage = gson.fromJson(message, JsonObject.class);
         log.debug("Incoming message: {}", jsonMessage);
+        try {
+            switch (jsonMessage.get("id").getAsString()) {
+                case "initSession":
+                    service.initSession(session);
+                    break;
+                case "initKMSSession":
+                    service.initKMSSession(session, jsonMessage);
+                    break;
+                case "getModelNames":
+                    service.getModelNames(session);
+                    break;
+                case "changeModel":
+                    service.changeModel(session, jsonMessage);
+                    break;
+                case "setConfi":
+                    service.setConfi(session, jsonMessage);
+                    break;
+                case "setBoxLimit":
+                    service.setBoxLimit(session, jsonMessage);
+                    break;
+                case "setInferring":
+                    service.setInferring(session, jsonMessage);
+                    break;
+                case "setInferringDelay":
+                    service.setInferringDelay(session, jsonMessage);
+                    break;
+                case "setDrawing":
+                    service.setDrawing(session, jsonMessage);
+                    break;
+                case "setRelay":
+                    service.setRelay(session, jsonMessage);
+                    break;
+                case "getSettings":
+                    service.getSettings(session);
+                    break;
+                case "setDspMode":
+                    service.setDspMode(session, jsonMessage);
+                    break;
+                case "stop":
+                    service.stop(session);
+                    break;
+                case "destroy":
+                    service.destroy(session);
+                    break;
+                case "onIceCandidate":
+                    service.onIceCandidate(session, jsonMessage);
+                    break;
+                case "heartbeat":
+                    service.heartbeat(session);
+                    break;
+                default:
+                    service.sendError(session, "E001",
+                            "Invalid message with id " + jsonMessage.get("id").getAsString());
+                    break;
+            }
 
-        switch (jsonMessage.get("id").getAsString()) {
-            case "initSession":
-                service.initSession(session);
-                break;
-            case "initKMSSession":
-                service.initKMSSession(session, jsonMessage);
-                break;
-            case "getModelNames":
-                service.getModelNames(session);
-                break;
-            case "changeModel":
-                service.changeModel(session, jsonMessage);
-                break;
-            case "setConfi":
-                service.setConfi(session, jsonMessage);
-                break;
-            case "setBoxLimit":
-                service.setBoxLimit(session, jsonMessage);
-                break;
-            case "setInferring":
-                service.setInferring(session, jsonMessage);
-                break;
-            case "setInferringDelay":
-                service.setInferringDelay(session, jsonMessage);
-                break;
-            case "setDrawing":
-                service.setDrawing(session, jsonMessage);
-                break;
-            case "setRelay":
-                service.setRelay(session, jsonMessage);
-                break;
-            case "getSettings":
-                service.getSettings(session);
-                break;
-            case "setDspMode":
-                service.setDspMode(session, jsonMessage);
-                break;
-            case "stop":
-                service.stop(session);
-                break;
-            case "destroy":
-                service.destroy(session);
-                break;
-            case "onIceCandidate":
-                service.onIceCandidate(session, jsonMessage);
-                break;
-            case "heartbeat":
-                service.heartbeat(session);
-                break;
-            default:
-                service.sendError(session, "E001", "Invalid message with id " + jsonMessage.get("id").getAsString());
-                break;
+        } catch (Exception e) {
+            String msg = utils.getStackTraceString(e);
+            log.error("{}: error handling messages: {}", session.getId(), msg);
+            service.sendError(session, "unexpected", msg);
+            service.destroy(session);
         }
+
     }
 
     @OnOpen
@@ -119,7 +132,7 @@ public class DefaultController implements ApplicationContextAware {
     @OnClose
     public void onClose(CloseReason closeReason) {
         service.stop(session);
-        log.info("{}: Websocket connection clsoed.", session.getId());
+        log.info("{}: Websocket connection closed.", session.getId());
     }
 
     @OnError

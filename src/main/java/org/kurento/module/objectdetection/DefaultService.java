@@ -399,7 +399,7 @@ public class DefaultService {
         response.addProperty("id", "sdpAnswer");
         response.addProperty("sdpAnswer", sdpAnswer);
         sendMessage(session, response.toString());
-
+        user.setLastBoxes(null);
         user.getWebRtcEndpoint().gatherCandidates();
 
     }

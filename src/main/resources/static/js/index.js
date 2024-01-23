@@ -1,4 +1,3 @@
-import * as utils from "./utils.js";
 import * as ui from "./ui.js";
 import * as wsController from "./websocket-controller.js";
 let controller = null;

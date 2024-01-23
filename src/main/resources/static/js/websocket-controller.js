@@ -68,10 +68,10 @@ export class Controller {
      * @param {*} ev
      */
     #onclose(self, ev) {
-        console.log("web socket clsoed");
+        console.log("web socket closed");
         if (ev.wasClean == false) {
             console.error("websocket closing was not clean");
-            console.error("websocket close code is" + ev.code);
+            console.error("websocket close code is " + ev.code);
             console.error("websocket reason is " + ev.reason);
             ui.showMessage(
                 "Connection is lost, please try again.",
