@@ -21,7 +21,7 @@ public class UserSession {
   private int inferringDelay = 100;
   private boolean isDrawing = true;
   private String relayServer = "default";
-  private String displayMode = "remote";
+  private String displayMode = "local";
   private long detBoxTimeStp = 0;
   private ModelObj[] lastBoxes = null;
 

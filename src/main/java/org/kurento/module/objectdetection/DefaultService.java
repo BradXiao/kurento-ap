@@ -88,7 +88,9 @@ public class DefaultService {
         // test
         ObjDet objDetFilter = new ObjDet.Builder(pipeline).build();
         webRtcEndpoint.connect(objDetFilter);
-        objDetFilter.connect(webRtcEndpoint);
+        if (user.getDisplayMode().equals("remote")) {
+            objDetFilter.connect(webRtcEndpoint);
+        }
 
         user.setObjdet(objDetFilter);
         registerEvents(session, webRtcEndpoint, objDetFilter);
@@ -208,7 +210,7 @@ public class DefaultService {
         log.info("{}: set display mode", session.getId());
         UserSession user = users.get(session.getId());
         String mode = jsonMessage.get("mode").getAsString();
-        if (mode.equals("remote")) {
+        if (mode.equals("remote") || mode.equals("local")) {
             user.setDisplayMode(mode);
             log.debug("{}: set display mode {}", session.getId(), mode);
         } else {
@@ -385,6 +387,12 @@ public class DefaultService {
                 }
                 message.addProperty("data", data);
                 sendMessage(session, message.toString());
+                if (user.isDrawing() && user.getDisplayMode().equals("local")) {
+                    JsonObject message2 = new JsonObject();
+                    message2.addProperty("id", "boxDetectedForCanvas");
+                    message2.addProperty("data", event.getObjectJSON());
+                    sendMessage(session, message2.toString());
+                }
             }
 
         });

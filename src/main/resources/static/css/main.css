@@ -722,3 +722,11 @@ li {
 .div-max-100px {
     max-width: 100px;
 }
+
+#boxCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

@@ -330,6 +330,53 @@ export async function insertObj(objName) {
     await utils.sleep(700);
 }
 
+export function clearObjCanvas() {
+    let canvas = document.getElementById("boxCanvas");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+export function drawObjOnCanvas(objs) {
+    let canvas = document.getElementById("boxCanvas");
+    let ctx = canvas.getContext("2d");
+    let dpr = window.devicePixelRatio || 1;
+    ctx.strokeStyle = "#00FF00";
+    ctx.lineWidth = 2;
+    for (var i = 0; i < objs.length; i++) {
+        let box = objs[i];
+        let rawWidth = canvas.width / dpr;
+        let rawHeight = canvas.height / dpr;
+        let x1 = Number((box.x1r * rawWidth).toFixed(0));
+        let y1 = Number((box.y1r * rawHeight).toFixed(0));
+        let w = Number(((box.x2r - box.x1r) * rawWidth).toFixed(0));
+        let h = Number(((box.y2r - box.y1r) * rawHeight).toFixed(0));
+        ctx.strokeRect(x1, y1, w, h);
+
+        let text = `${box.name} - ${Number(parseFloat(box.confi).toFixed(2))}`;
+        ctx.font = "8px Arial";
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        let textWidth = Number(ctx.measureText(text).width.toFixed(0)) + 2;
+
+        ctx.fillStyle = "#00FF00";
+        ctx.fillRect(x1 + 1, y1 + 1, textWidth, 10);
+        ctx.fillStyle = "#000000";
+        ctx.fillText(text, x1 + Number((textWidth / 2).toFixed(0)), y1 + 5);
+    }
+}
+
+export function updateObjCanvasScale() {
+    let canvas = document.getElementById("boxCanvas");
+    let ctx = canvas.getContext("2d");
+    let dpr = window.devicePixelRatio || 1;
+    let rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+}
+
 function initStsRange() {
     var ranges = $("#settings > form > div:has(input[type=range])");
     var texts = ["Object confidence threshold: ", "Box limit: ", "Inference delay btw. frames (ms): "];

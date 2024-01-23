@@ -18,6 +18,7 @@ export class Service {
     #relayServer = null;
     #usePrevParam = false;
     #platform = null;
+    #dspMode = "local";
 
     #isRelayConnected = false;
     #relayTimerId = null;
@@ -203,7 +204,6 @@ export class Service {
 
         var options = {
             localVideo: document.getElementById("videoInput"),
-            remoteVideo: document.getElementById("videoOutput"),
             onicecandidate: self.onIceCandidate,
             mediaConstraints: {
                 video: { deviceId: this.#defaultDeviceId },
@@ -211,6 +211,10 @@ export class Service {
             },
             configuration: config,
         };
+        if (self.#dspMode === "remote") {
+            options.remoteVideo = document.getElementById("videoOutput");
+        }
+
         await ui.showLoading("Create streaming...");
         self.#webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options, function (error) {
             if (error) {
@@ -240,6 +244,7 @@ export class Service {
             .removeClass("btn-warning")
             .addClass("btn-primary");
         ui.setStrmOverlay("pause");
+        ui.clearObjCanvas();
     }
 
     #resumeStreaming() {
@@ -256,6 +261,8 @@ export class Service {
         } else {
             ui.setStrmOverlay("strm");
         }
+
+        ui.clearObjCanvas();
     }
 
     #stopStreaming() {
@@ -277,6 +284,7 @@ export class Service {
             .addClass("btn-primary");
         $("#btnStop").prop("disabled", true);
         ui.setStrmOverlay("stop");
+        ui.clearObjCanvas();
     }
 
     async handleConnected() {
@@ -329,14 +337,30 @@ export class Service {
         $("#selRelay").val(parsedMessage.relay);
         $("#selDisplayMode").val(parsedMessage.dspMode);
         $("#rangeConfi").val(parsedMessage.confi);
+
         await utils.sleep(1000);
-        if (self.#defaultDeviceId !== $("#selVideoSrc").val() || self.#relayServer !== $("#selRelay").val()) {
+        if (
+            self.#defaultDeviceId !== $("#selVideoSrc").val() ||
+            self.#relayServer !== $("#selRelay").val() ||
+            self.#dspMode !== $("#selDisplayMode").val()
+        ) {
             self.#defaultDeviceId = $("#selVideoSrc").val();
             self.#relayServer = $("#selRelay").val();
+            self.#dspMode = $("#selDisplayMode").val();
             self.#usePrevParam = true;
             self.#stopStreaming();
             self.#startStreaming();
             return;
+        }
+
+        if (parsedMessage.isDrawing === "true" ? true : false) {
+            if (parsedMessage.dspMode === "local") {
+                $("#videoInput").show();
+                $("#videoOutput").hide();
+            } else {
+                $("#videoInput").hide();
+                $("#videoOutput").show();
+            }
         }
 
         if ($("#settings").is(":visible") !== true) {
@@ -353,9 +377,28 @@ export class Service {
 
     async handleBoxDetected(parsedMessage) {
         const boxes = JSON.parse(parsedMessage.data);
+        ui.clearObjCanvas();
         for (let i = 0; i < boxes.length; i += 1) {
             await ui.insertObj(boxes[i].name);
         }
+    }
+
+    async handleBoxDetectedForCanvas(parsedMessage) {
+        let targetWidth = $("#div-demo").find("div[class='video-on'").width();
+        let targetHeight = $("#div-demo").find("div[class='video-on'").height();
+        if (
+            $("#boxCanvas").attr("targetWidth") === undefined ||
+            $("#boxCanvas").attr("targetWidth") != `${targetWidth}` ||
+            $("#boxCanvas").attr("targetHeight") != `${targetHeight}`
+        ) {
+            ui.updateObjCanvasScale();
+            $("#boxCanvas").attr("targetWidth", targetWidth);
+            $("#boxCanvas").attr("targetHeight", targetHeight);
+        }
+
+        const boxes = JSON.parse(parsedMessage.data);
+        ui.clearObjCanvas();
+        ui.drawObjOnCanvas(boxes);
     }
 
     handleError(error) {

@@ -49,6 +49,9 @@ export class Controller {
             case "boxDetected":
                 self.#service.handleBoxDetected(parsedMessage);
                 break;
+            case "boxDetectedForCanvas":
+                self.#service.handleBoxDetectedForCanvas(parsedMessage);
+                break;
             case "error":
                 self.#service.handleError(parsedMessage.message);
                 self.destroy();

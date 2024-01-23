@@ -129,7 +129,7 @@
                 </div>
                 <div class="form-check form-switch form-div">
                     <input class="form-check-input" type="checkbox" role="switch" id="swDspBoxes" />
-                    <label class="form-check-label form-label" for="swDspBoxes">Display detected boxes</label>
+                    <label class="form-check-label form-label" for="swDspBoxes">Display detected objects</label>
                 </div>
                 <div class="row form-div">
                     <label for="selModel" class="form-label form-label">Inference model</label>
@@ -143,10 +143,10 @@
                     </select>
                 </div>
                 <div class="row form-div">
-                    <label for="selDisplayMode" class="form-label form-label">Processed frames display mode</label>
+                    <label for="selDisplayMode" class="form-label form-label">Detected objects display mode</label>
                     <select id="selDisplayMode" class="form-select">
-                        <option value="remote" selected>Remote</option>
-                        <option value="local" disabled>Local</option>
+                        <option value="remote">Remotely</option>
+                        <option value="local" selected>Locally</option>
                     </select>
                 </div>
                 <div class="row form-div">
@@ -173,6 +173,7 @@
                 <div class="col">
                     <h2 class="text-center title-h" id="title-demo">Live Demonstration</h2>
                     <div class="video-on">
+                        <canvas id="boxCanvas"></canvas>
                         <div class="d-flex justify-content-between align-content-center">
                             <div class="video-overlay-div">
                                 <img name="strm" class="video-overlay-img" src="img/play-stream.png" />
@@ -180,16 +181,17 @@
                                 <img name="pause" class="video-overlay-img" src="img/pause.png" />
                                 <span>Streaming</span>
                             </div>
+                            <video id="videoInput" autoplay loop muted playsinline width="100%" poster="img/webrtc.png"></video>
                             <video
-                                id="videoInput"
+                                id="videoOutput"
                                 autoplay
                                 loop
                                 muted
                                 playsinline
+                                width="100%"
                                 poster="img/webrtc.png"
                                 style="display: none"
                             ></video>
-                            <video id="videoOutput" autoplay loop muted playsinline width="100%" poster="img/webrtc.png"></video>
                         </div>
                     </div>
                     <div id="divObjWrapper">
