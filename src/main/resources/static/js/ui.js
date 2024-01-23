@@ -112,7 +112,7 @@ export function init() {
     ////others
     initStsRange();
     clearObjs();
-    $("#divObjShow").hide();
+    $("#divObjWrapper").hide();
 }
 
 export async function showLoading(msg = "") {

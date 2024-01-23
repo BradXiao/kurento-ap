@@ -365,12 +365,16 @@ export class Service {
 
         if ($("#settings").is(":visible") !== true) {
             ui.hideLoading();
-            if ($("#divObjShow").is(":visible") == false) {
-                $("#divObjShow").css("min-height", "0").show();
-                gsap.to("#divObjShow", {
-                    "min-height": "5rem",
-                    duration: 1,
-                });
+            if ($("#divObjWrapper").is(":visible") == false) {
+                $("#divObjWrapper").css("min-height", "0").show();
+                gsap.fromTo(
+                    "#divObjWrapper",
+                    { "min-height": "0" },
+                    {
+                        "min-height": "4.8rem",
+                        duration: 1,
+                    }
+                );
             }
         }
     }
