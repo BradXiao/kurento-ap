@@ -15,8 +15,13 @@ export class Service {
     #streamingMode = 1;
     #isInferring = false;
     #defaultDeviceId = null;
+    #relayServer = null;
     #usePrevParam = false;
     #platform = null;
+
+    #isRelayConnected = false;
+    #relayTimerId = null;
+    #relayCheckCounter = 0;
 
     constructor(ws) {
         self = this;
@@ -97,10 +102,31 @@ export class Service {
 
     handleTurnInfo(parsedMessage) {
         self.#turnInfo = {
-            server: parsedMessage.turnserver,
+            turnname1: parsedMessage.turnname1,
+            turnip1: parsedMessage.turnip1,
+            turnname2: parsedMessage.turnname2,
+            turnip2: parsedMessage.turnip2,
             username: parsedMessage.username,
             credential: parsedMessage.credential,
         };
+        $("#selRelay").empty();
+
+        $("#selRelay").append(
+            $("<option>", {
+                value: self.#turnInfo.turnname1,
+                text: self.#turnInfo.turnname1,
+            })
+        );
+        $("#selRelay").val(self.#turnInfo.turnname1);
+        self.#relayServer = self.#turnInfo.turnname1;
+        if (self.#turnInfo.turnname2 !== "") {
+            $("#selRelay").append(
+                $("<option>", {
+                    value: self.#turnInfo.turnname2,
+                    text: self.#turnInfo.turnname2,
+                })
+            );
+        }
     }
 
     handleModelNames(parsedMessage) {
@@ -146,12 +172,19 @@ export class Service {
         await self.#initWebcams();
         await ui.showLoading("Prepare streaming...");
         ui.clearObjs();
+        let turnip = "";
+        if (self.#relayServer === self.#turnInfo.turnname1) {
+            turnip = self.#turnInfo.turnip1;
+        } else {
+            turnip = self.#turnInfo.turnip2;
+        }
+
         let config;
         if (this.#platform.os === "iOS" || this.#platform.browser === "firefox") {
             config = {
                 iceServers: [
                     {
-                        urls: "turn:" + self.#turnInfo.server,
+                        urls: "turn:" + turnip,
                         username: self.#turnInfo.username,
                         credential: self.#turnInfo.credential,
                     },
@@ -162,7 +195,7 @@ export class Service {
             config = {
                 iceServers: [
                     {
-                        url: "turn:" + self.#turnInfo.server,
+                        url: "turn:" + turnip,
                         username: self.#turnInfo.username,
                         credential: self.#turnInfo.credential,
                     },
@@ -195,7 +228,7 @@ export class Service {
                 }
 
                 ui.showLoading("Create recognition session...");
-                self.sendMessage({ id: "initKMSSession", sdpOffer: offerSdp });
+                self.sendMessage({ id: "initKMSSession", sdpOffer: offerSdp, turnserver: self.#relayServer });
             });
         });
     }
@@ -250,6 +283,7 @@ export class Service {
     }
 
     async handleConnected() {
+        self.#isRelayConnected = true;
         ui.showLoading("Preparing recognition core...");
         self.#heartbeatTimerId = setInterval(() => {
             self.sendMessage({ id: "heartbeat" });
@@ -299,8 +333,9 @@ export class Service {
         $("#selDisplayMode").val(parsedMessage.dspMode);
         $("#rangeConfi").val(parsedMessage.confi);
         await utils.sleep(1000);
-        if (self.#defaultDeviceId !== $("#selVideoSrc").val()) {
+        if (self.#defaultDeviceId !== $("#selVideoSrc").val() || self.#relayServer !== $("#selRelay").val()) {
             self.#defaultDeviceId = $("#selVideoSrc").val();
+            self.#relayServer = $("#selRelay").val();
             self.#usePrevParam = true;
             self.#stopStreaming();
             self.#startStreaming();
@@ -345,6 +380,7 @@ export class Service {
                 alert(error);
             }
         });
+        self.#startCheckingRelay();
     }
 
     handleIceCandidate(candidate) {
@@ -412,5 +448,36 @@ export class Service {
             "error",
             "Reload"
         );
+    }
+
+    #startCheckingRelay() {
+        self.#isRelayConnected = false;
+        self.#relayTimerId = null;
+        self.#relayCheckCounter = 0;
+
+        self.#relayTimerId = setInterval(() => {
+            if (self.#isRelayConnected == true) {
+                clearInterval(self.#relayTimerId);
+                return;
+            }
+
+            self.#relayCheckCounter += 1;
+            if (self.#relayCheckCounter > 10) {
+                console.warn("Streaming did not respond, switch relay server");
+                clearInterval(self.#relayTimerId);
+                ui.showLoading("Switching relay server...");
+                self.#stopStreaming();
+                let newTurnName;
+                if (self.#turnInfo.turnname1 === $("#selRelay").val()) {
+                    newTurnName = self.#turnInfo.turnname2;
+                } else {
+                    newTurnName = self.#turnInfo.turnname1;
+                }
+
+                self.#relayServer = newTurnName;
+                ui.showLoading("Restart streaming...");
+                self.#startStreaming();
+            }
+        }, 1000);
     }
 }

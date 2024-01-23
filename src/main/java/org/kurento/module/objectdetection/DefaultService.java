@@ -46,7 +46,10 @@ public class DefaultService {
 
         JsonObject msg = new JsonObject();
         msg.addProperty("id", "turnInfo");
-        msg.addProperty("turnserver", configuration.TURN_SERVER);
+        msg.addProperty("turnname1", configuration.TURN1_NAME);
+        msg.addProperty("turnip1", configuration.TURN1_SERVER);
+        msg.addProperty("turnname2", configuration.TURN2_NAME);
+        msg.addProperty("turnip2", configuration.TURN2_SERVER);
         msg.addProperty("username", turnInfo[0]);
         msg.addProperty("credential", turnInfo[1]);
 
@@ -57,13 +60,29 @@ public class DefaultService {
     public void initKMSSession(final Session session, final JsonObject jsonMessage) {
         log.info("{}: initKMSSession", session.getId());
         UserSession user = users.get(session.getId());
+
+        String turnserver = jsonMessage.get("turnserver").getAsString();
+        if (turnserver.equals(configuration.TURN1_NAME) == false
+                && turnserver.equals(configuration.TURN2_NAME) == false) {
+            sendError(session, "", "Unknown TURN server!");
+            return;
+        } else {
+            user.setRelayServer(turnserver);
+        }
+        String turnip = "";
+        if (turnserver.equals(configuration.TURN1_NAME)) {
+            turnip = configuration.TURN1_INTERNAL_SERVER;
+        } else if (turnserver.equals(configuration.TURN2_NAME)) {
+            turnip = configuration.TURN2_INTERNAL_SERVER;
+        }
+
         MediaPipeline pipeline = kurento.createMediaPipeline();
         user.setMediaPipeline(pipeline);
         WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).build();
 
         String[] turnInfo = user.getTurnInfo();
         webRtcEndpoint
-                .setTurnUrl(String.format("%s:%s@%s", turnInfo[0], turnInfo[1], configuration.TURN_INTERNAL_SREVER));
+                .setTurnUrl(String.format("%s:%s@%s", turnInfo[0], turnInfo[1], turnip));
         user.setWebRtcEndpoint(webRtcEndpoint);
 
         // test
@@ -172,12 +191,15 @@ public class DefaultService {
     public void setRelay(final Session session, final JsonObject jsonMessage) {
         log.info("{}: set relay server", session.getId());
         UserSession user = users.get(session.getId());
-        String relayName = jsonMessage.get("name").getAsString();
-        if (relayName.equals("defaut")) {
-            user.setRelayServer(relayName);
-            log.debug("{}: relay server {}", session.getId(), relayName);
+        String turnserver = jsonMessage.get("name").getAsString();
+        if (turnserver.equals(configuration.TURN1_NAME) == false
+                && turnserver.equals(configuration.TURN2_NAME) == false) {
+            sendError(session, "", "Unknown TURN server!");
+            log.error("{}: invalid relay server name {}", session.getId(), turnserver);
+            return;
         } else {
-            log.error("{}: invalid relay server name {}", session.getId(), relayName);
+            user.setRelayServer(turnserver);
+            log.debug("{}: relay server {}", session.getId(), turnserver);
         }
 
     }

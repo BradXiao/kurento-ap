@@ -19,10 +19,20 @@ public class DefaultConfiguration {
     @Value("${objdet.default.drawbox}")
     public boolean OBJDET_DEFAULT_DRAWBOX;
 
-    @Value("${turn.internal.sever}")
-    public String TURN_INTERNAL_SREVER;
-    @Value("${turn.server}")
-    public String TURN_SERVER;
+    @Value("${turn1.internal.sever}")
+    public String TURN1_INTERNAL_SERVER;
+    @Value("${turn1.server}")
+    public String TURN1_SERVER;
+    @Value("${turn1.name}")
+    public String TURN1_NAME;
+
+    @Value("${turn2.internal.sever}")
+    public String TURN2_INTERNAL_SERVER;
+    @Value("${turn2.server}")
+    public String TURN2_SERVER;
+    @Value("${turn2.name}")
+    public String TURN2_NAME;
+
     @Value("${turn.static-auth-secret}")
     public String TURN_STATIC_AUTH_SECRET;
 
