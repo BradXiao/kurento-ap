@@ -433,7 +433,8 @@ export class Service {
                 msg = "Your webcam cannot be satisfied!";
                 break;
             default:
-                msg = "Unknown error! Cannot create streaming!";
+                msg = "Unknown error! Please make sure webcam is available and not not being used.";
+                console.error(error.name);
                 break;
         }
 

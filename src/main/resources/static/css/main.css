@@ -73,8 +73,6 @@ h2:before {
 
 .title-h {
     color: var(--title-color-1);
-    margin-bottom: 1rem;
-    margin-top: 1rem;
 }
 
 .text-color-1 {
@@ -219,7 +217,6 @@ h2:before {
     -webkit-transition: all 0.3s ease;
     border-radius: 6px;
     background-size: 400% 400%;
-    color: #ffffff;
     padding: 0.5rem 0.8rem;
     animation: gradient 3s ease infinite;
     -webkit-animation: gradient 3s ease infinite;
@@ -284,22 +281,6 @@ footer i {
     }
 }
 
-@media only screen and (max-width: 450px) {
-    /* mobile*/
-    .div-mobile-width-100 {
-        min-width: 100%;
-    }
-
-    .div-mobile-col-2 {
-        flex: 0 0 auto;
-        width: 25%;
-    }
-
-    .div-mobile-people {
-        margin-bottom: 1rem;
-    }
-}
-
 #dialog-text,
 .dialog-text {
     display: grid;
@@ -353,10 +334,6 @@ footer i {
     .loading-top {
         display: none;
     }
-}
-
-.demo-menu {
-    margin-top: 1rem;
 }
 
 .video-overlay-div {
@@ -506,6 +483,10 @@ input[type="range"]::-moz-range-thumb {
     padding-left: 0;
 }
 
+#divObjWrapper {
+    margin-top: 1.1rem !important;
+}
+
 #divObjShow {
     display: flex;
     overflow: hidden;
@@ -556,22 +537,38 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .objWrapper {
-    height: 4rem;
     background-color: #1cb5e0;
     margin-right: 0;
-    margin-top: 6px;
+    margin-top: 4px;
     border-radius: 10px;
-    margin-bottom: 6px;
-    margin-left: 6px;
+    /* margin-bottom: 6px; */
+    margin-left: 0.3rem;
     padding: 4px;
     opacity: 0;
+    max-height: 4.5rem;
+    max-width: 4.5rem;
+}
+
+.obj-text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 4rem;
+    display: block;
 }
 
 .objIns {
-    height: 2.2rem;
+    height: 75%;
     background-color: #1cb5e0;
     border-radius: 10px;
     width: 4rem;
+}
+
+.objText {
+    height: 25%;
+    display: grid;
+    align-content: center;
+    margin-top: 0.1rem;
 }
 
 .objImg {
@@ -720,4 +717,8 @@ li {
 .img-padding {
     padding-top: 1rem;
     padding-bottom: 1rem;
+}
+
+.div-max-100px {
+    max-width: 100px;
 }

@@ -43,11 +43,22 @@
     color: #fff;
 }
 
+.navbar-padding {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
 @media only screen and (min-width: 992px) {
     /* desktop*/
 
     .nav-link {
         border-bottom: 0 solid var(--divider-color);
+        padding: 0;
+    }
+
+    .navbar-padding {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
     }
 }
 
@@ -65,7 +76,7 @@
 
 .navbar-toggler span {
     display: block;
-    background-color: #4f4f4f;
+    background-color: var(--title-color-1);
     height: 2px;
     width: 22px;
     margin-top: 5px;

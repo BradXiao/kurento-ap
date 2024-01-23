@@ -320,7 +320,7 @@ export async function insertObj(objName) {
 
     $("#divObjShow").prepend(` <div class="objWrapper">
     <div  class="objIns"><img class="objImg" src="img/${objName.replace(" ", "")}.png" /></div>
-    <div><small><span class="text-capitalize font-monospace">${objName}</span></small></div>
+    <div class="objText"><small><span class="obj-text-ellipsis text-capitalize font-monospace">${objName}</span></small></div>
     </div>`);
     $("#divObjShow > div:first").eq(0).show("fast");
     gsap.to($("#divObjShow > div:first")[0], {
