@@ -149,9 +149,6 @@ export class Service {
                 "error"
             );
             return;
-        } else if (self.#platform.browser === "firefox") {
-            ui.showMessage("Oops! The demo is currently only supported on Chrome and Safari.", null, "error");
-            return;
         }
 
         var btnText = $("#btnStartPause").text().trim();
