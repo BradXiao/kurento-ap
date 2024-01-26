@@ -332,6 +332,12 @@ public class DefaultService {
                 user.setSelectedModel(jsonObj.get("defaultModel").getAsString());
                 log.info("{}: init with default model {}", session.getId(), user.getSelectedModel());
                 startStreaming(session, user.getSdpOffer());
+            } else if (jsonObj.get("state").getAsString().equals("E005")) {
+                log.error("{}: {} model not available", session.getId(), jsonObj.get("defaultModel").getAsString());
+                sendError(session, "E004", "The resource is insufficient due to too many users online, please try again later.");
+            } else {
+                log.error("{}: init session error: {}", session.getId(), jsonObj.toString());
+                sendError(session, "E005", "Unknown error while starting streaming");
             }
         });
 
@@ -343,14 +349,18 @@ public class DefaultService {
                 UserSession user = users.get(session.getId());
                 user.setSelectedModel(jsonObj.get("targetModel").getAsString());
                 log.info("{}: switch to target model {}", session.getId(), user.getSelectedModel());
+            } else if (jsonObj.get("state").getAsString().equals("E006")) {
+                log.error("{}: {} model not available", session.getId(), jsonObj.get("targetModel").getAsString());
+                sendError(session, "E004", "The resource is insufficient due to too many users online, please try again later.");
             } else {
-                // todo
+                log.error("{}: change model error: {}", session.getId(), jsonObj.toString());
+                sendError(session, "E006", "Unknown error while chaning model");
             }
         });
 
         objDetFilter.adderrorMessageListener(event -> {
-            log.error("Error message from KMS, {}", event.getMsgJSON());
-            // todo
+            log.error("{}: error message from KMS, {}", session.getId(), event.getMsgJSON());
+            sendError(session, "E007", "Unexpected error in streaming server!");
         });
 
         objDetFilter.addmodelNamesEventListener(event -> {
@@ -370,6 +380,7 @@ public class DefaultService {
 
                 long timestamp = System.currentTimeMillis();
                 if (timestamp - user.getDetBoxTimestamp() < configuration.OBJDET_DETECTEDBOX_SPEED_MILLISEC) {
+                    log.debug("{}: ignore detected objects due to inference delay", session.getId());
                     return;
                 }
                 user.setDetBoxTimestamp(timestamp);
@@ -392,6 +403,7 @@ public class DefaultService {
                 }
                 message.addProperty("data", data);
                 sendMessage(session, message.toString());
+
                 if (user.isDrawing() && user.getDisplayMode().equals("local")) {
                     JsonObject message2 = new JsonObject();
                     message2.addProperty("id", "boxDetectedForCanvas");
