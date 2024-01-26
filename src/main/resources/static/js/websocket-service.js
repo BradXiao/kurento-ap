@@ -358,8 +358,11 @@ export class Service {
             $("#videoOutput").show();
         }
 
-        if ($("#settings").is(":visible") !== true) {
+        if ($("div[id=settings]:visible,  div[id=dialog]:visible").length == 0) {
             ui.hideLoading();
+        }
+
+        if ($("#settings").is(":visible") !== true) {
             if ($("#divObjWrapper").is(":visible") == false) {
                 $("#divObjWrapper").css("min-height", "0").show();
                 gsap.fromTo(
@@ -403,6 +406,7 @@ export class Service {
     handleError(error) {
         console.error(error);
         ui.showMessage(error, () => $("html").html(""), "error", "Exit");
+        self.#stopStreaming();
     }
 
     onIceCandidate(candidate) {
