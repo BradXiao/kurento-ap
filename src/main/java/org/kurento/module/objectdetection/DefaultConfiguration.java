@@ -66,7 +66,9 @@ public class DefaultConfiguration {
     @Value("${objdet.detectedbox.distinct}")
     public boolean OBJDET_DETECTEDBOX_DISTINCT;
 
-    /** threshold for combining similar objects; how close of two objects in ratio is treated as identical object; should be 0.001~0.9 */
+    /**
+     * threshold for combining similar objects; how close of two objects in ratio is treated as identical object; should be 0.001~0.9
+     */
     @Value("${objdet.detectedbox.distinct.ratio}")
     public float OBJDET_DETECTEDBOX_DISTINCT_RATIO;
 

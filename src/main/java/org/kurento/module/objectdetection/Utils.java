@@ -10,20 +10,29 @@ import java.util.List;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Utils {
+    private final Logger log = LoggerFactory.getLogger(Utils.class);
 
     @Autowired
     private DefaultConfiguration configuration;
 
-    public String[] getTurnCredInfo(String username) {
+    /**
+     * get authentication info for TURN connection
+     * 
+     * @param sessionId session ID
+     * @return [username, credential] for TURN connection
+     */
+    public String[] getTurnCredInfo(String sessionId) {
         try {
 
             long timestamp = System.currentTimeMillis() / 1000L + 3 * 3600; // 3-hour timeout
-            String turnUser = String.format("%d:%s", timestamp, username);
+            String turnUser = String.format("%d:%s", timestamp, sessionId);
 
             Mac sha1_HMAC = Mac.getInstance("HmacSHA1");
             SecretKeySpec secret_key = new SecretKeySpec(configuration.TURN_STATIC_AUTH_SECRET.getBytes(), "HmacSHA1");
@@ -34,12 +43,17 @@ public class Utils {
 
             return new String[] { turnUser, cred };
         } catch (Exception e) {
-
-            e.printStackTrace();
+            log.error("error calculating TURN info: {}", getStackTraceString(e));
         }
         return null;
     }
 
+    /**
+     * format exception info
+     * 
+     * @param e
+     * @return
+     */
     public String getStackTraceString(final Exception e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
@@ -47,17 +61,25 @@ public class Utils {
         return sw.toString();
     }
 
-    public ModelObj[] distinctObjs(final ModelObj[] beforeObjs, final ModelObj[] afterObjs) {
-        HashMap<String, List<ModelObj>> beforeObjsDict = sortByBoxName(beforeObjs);
-        List<ModelObj> passObjs = new ArrayList<>();
-        for (ModelObj obj : afterObjs) {
-            if (beforeObjsDict.containsKey(obj.name) == false) {
-                passObjs.add(obj);
+    /**
+     * combine similar objects to prevent lots of identical objects showing
+     * 
+     * @param frameAObjs frame a
+     * @param frameBObjs frame b
+     * @return combined objects
+     */
+    public ModelObj[] distinctObjs(final ModelObj[] frameAObjs, final ModelObj[] frameBObjs) {
+        HashMap<String, List<ModelObj>> frameAObjsDict = sortByBoxName(frameAObjs);
+        List<ModelObj> combinedObjs = new ArrayList<>();
+        float ratio = configuration.OBJDET_DETECTEDBOX_DISTINCT_RATIO;
+
+        for (ModelObj obj : frameBObjs) {
+            if (frameAObjsDict.containsKey(obj.name) == false) {
+                combinedObjs.add(obj);
                 continue;
             }
-            float ratio = configuration.OBJDET_DETECTEDBOX_DISTINCT_RATIO;
             boolean newObj = true;
-            for (ModelObj srcObj : beforeObjsDict.get(obj.name)) {
+            for (ModelObj srcObj : frameAObjsDict.get(obj.name)) {
                 if (Math.abs(srcObj.x1r - obj.x1r) < ratio && Math.abs(srcObj.y1r - obj.y1r) < ratio
                         && Math.abs(srcObj.x2r - obj.x2r) < ratio && Math.abs(srcObj.y2r - obj.y2r) < ratio) {
                     newObj = false;
@@ -66,15 +88,18 @@ public class Utils {
             }
 
             if (newObj == true) {
-                passObjs.add(obj);
+                combinedObjs.add(obj);
             }
 
         }
-
-        return passObjs.toArray(new ModelObj[0]);
+        log.debug("frame a objs: {}, frame b objs: {}, combined objs: {}", frameAObjs.length, frameBObjs.length, combinedObjs.size());
+        return combinedObjs.toArray(new ModelObj[0]);
 
     }
 
+    // ============================================================================================
+    // private functions
+    // ============================================================================================
     private HashMap<String, List<ModelObj>> sortByBoxName(final ModelObj[] objs) {
         HashMap<String, List<ModelObj>> tmp = new HashMap<>();
         for (ModelObj obj : objs) {

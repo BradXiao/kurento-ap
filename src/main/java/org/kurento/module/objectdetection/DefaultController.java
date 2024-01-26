@@ -108,7 +108,7 @@ public class DefaultController implements ApplicationContextAware {
         } catch (Exception e) {
             String msg = utils.getStackTraceString(e);
             log.error("{}: error handling messages: {}", session.getId(), msg);
-            service.sendError(session, "unexpected", msg);
+            service.sendError(session, "E002", msg);
             service.destroy(session);
         }
 
@@ -137,6 +137,7 @@ public class DefaultController implements ApplicationContextAware {
 
     @OnError
     public void onError(Throwable throwable) throws IOException {
+        service.sendError(session, "E003", "unexpected websocket connection exception");
         this.session.close(new CloseReason(CloseReason.CloseCodes.UNEXPECTED_CONDITION, throwable.getMessage()));
         log.error("{}: Websocket connection error. ({})", session.getId(), throwable.getMessage());
     }

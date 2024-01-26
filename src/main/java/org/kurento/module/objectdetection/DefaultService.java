@@ -68,13 +68,17 @@ public class DefaultService {
             return;
         } else {
             user.setRelayServer(turnserver);
+            log.info("{}: select TURN server {}", session.getId(), turnserver);
         }
+
         String turnip = "";
         if (turnserver.equals(configuration.TURN1_NAME)) {
             turnip = configuration.TURN1_INTERNAL_SERVER;
         } else if (turnserver.equals(configuration.TURN2_NAME)) {
             turnip = configuration.TURN2_INTERNAL_SERVER;
         }
+
+        log.info("{}: init streaming", session.getId());
 
         MediaPipeline pipeline = kurento.createMediaPipeline();
         user.setMediaPipeline(pipeline);
@@ -85,9 +89,9 @@ public class DefaultService {
                 .setTurnUrl(String.format("%s:%s@%s", turnInfo[0], turnInfo[1], turnip));
         user.setWebRtcEndpoint(webRtcEndpoint);
 
-        // test
         ObjDet objDetFilter = new ObjDet.Builder(pipeline).build();
         webRtcEndpoint.connect(objDetFilter);
+
         if (user.getDisplayMode().equals("remote")) {
             objDetFilter.connect(webRtcEndpoint);
         }
@@ -96,7 +100,7 @@ public class DefaultService {
         registerEvents(session, webRtcEndpoint, objDetFilter);
         user.setSdpOffer(jsonMessage.get("sdpOffer").getAsString());
 
-        log.debug("{}: trigger KMS to init KMSSession", session.getId());
+        log.info("{}: trigger KMS to init KMSSession", session.getId());
         user.getObjdet().initSession();
 
     }
@@ -154,7 +158,7 @@ public class DefaultService {
         if (jsonMessage.get("sw").getAsString().equals("true")) {
             user.getObjdet().startInferring();
             long timestamp = System.currentTimeMillis();
-            user.setDetBoxTimeStp(timestamp);
+            user.setDetBoxTimestamp(timestamp);
             log.debug("{}: signal start inferring to KMS", session.getId());
         } else {
             user.getObjdet().stopInferring();
@@ -243,6 +247,7 @@ public class DefaultService {
                 jsonCandidate.get("sdpMid").getAsString(),
                 jsonCandidate.get("sdpMLineIndex").getAsInt());
         user.addCandidate(candidate);
+        log.debug("{}: on ice candidate: {}", session.getId(), jsonMessage.toString());
 
     }
 
@@ -256,7 +261,7 @@ public class DefaultService {
         log.info("{}: stop streaming", session.getId());
         UserSession user = users.get(session.getId());
         if (user != null) {
-            user.destroy();
+            user.releaseStreamObject();
         }
 
     }
@@ -265,7 +270,7 @@ public class DefaultService {
         log.info("{}: session is destroyed {}", session.getId(), session.getId());
         UserSession user = users.remove(session.getId());
         if (user != null) {
-            user.destroy();
+            user.releaseStreamObject();
         }
         try {
             session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Close"));
@@ -364,10 +369,10 @@ public class DefaultService {
             synchronized (user) {
 
                 long timestamp = System.currentTimeMillis();
-                if (timestamp - user.getDetBoxTimeStp() < configuration.OBJDET_DETECTEDBOX_SPEED_MILLISEC) {
+                if (timestamp - user.getDetBoxTimestamp() < configuration.OBJDET_DETECTEDBOX_SPEED_MILLISEC) {
                     return;
                 }
-                user.setDetBoxTimeStp(timestamp);
+                user.setDetBoxTimestamp(timestamp);
                 log.debug("{}: box detected: {}", session.getId(), event.getObjectJSON());
                 JsonObject message = new JsonObject();
                 message.addProperty("id", "boxDetected");
