@@ -179,11 +179,11 @@ public class DefaultService {
         log.info("{}: set drawing", session.getId());
         UserSession user = users.get(session.getId());
         if (jsonMessage.get("sw").getAsString().equals("true")) {
-            user.getObjdet().setIsDraw(true, true);
+            user.getObjdet().setDrawing(true, true);
             user.setDrawing(true);
             log.debug("{}: signal enable drawing to KMS", session.getId());
         } else {
-            user.getObjdet().setIsDraw(false, true);
+            user.getObjdet().setDrawing(false, true);
             user.setDrawing(false);
             log.debug("{}: signal disable drawing to KMS", session.getId());
         }
@@ -249,7 +249,7 @@ public class DefaultService {
     public void heartbeat(final Session session) {
         log.debug("{}: trigger KMS heartbeat", session.getId());
         UserSession user = users.get(session.getId());
-        user.getObjdet().heartbeat(user.getKmsSessionId());
+        user.getObjdet().heartbeat();
     }
 
     public void stop(Session session) {
