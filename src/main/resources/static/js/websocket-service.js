@@ -98,7 +98,11 @@ export class Service {
             $("#selVideoSrc").val(webcams[0].deviceId);
         }
 
-        this.#defaultDeviceId = $("#selVideoSrc").val();
+        if (self.#deviceId !== null) {
+            $("#selectVideoSrc").val(self.#deviceId);
+        } else {
+            self.#deviceId = $("#selectVideoSrc").val();
+        }
     }
 
     handleTurnInfo(parsedMessage) {
