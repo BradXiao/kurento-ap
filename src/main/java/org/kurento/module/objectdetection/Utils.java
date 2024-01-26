@@ -55,11 +55,11 @@ public class Utils {
                 passObjs.add(obj);
                 continue;
             }
-            int pixelTh = configuration.OBJDET_DETECTEDBOX_DISTINCT_PIXEL;
+            float ratio = configuration.OBJDET_DETECTEDBOX_DISTINCT_RATIO;
             boolean newObj = true;
             for (ModelObj srcObj : beforeObjsDict.get(obj.name)) {
-                if (Math.abs(srcObj.x1 - obj.x1) < pixelTh && Math.abs(srcObj.y1 - obj.y1) < pixelTh
-                        && Math.abs(srcObj.x2 - obj.x2) < pixelTh && Math.abs(srcObj.y2 - obj.y2) < pixelTh) {
+                if (Math.abs(srcObj.x1r - obj.x1r) < ratio && Math.abs(srcObj.y1r - obj.y1r) < ratio
+                        && Math.abs(srcObj.x2r - obj.x2r) < ratio && Math.abs(srcObj.y2r - obj.y2r) < ratio) {
                     newObj = false;
                     break;
                 }

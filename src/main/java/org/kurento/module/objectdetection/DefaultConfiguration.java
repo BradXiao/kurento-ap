@@ -66,9 +66,9 @@ public class DefaultConfiguration {
     @Value("${objdet.detectedbox.distinct}")
     public boolean OBJDET_DETECTEDBOX_DISTINCT;
 
-    /** threshold for combining similar objects; how close of two objects in pixel is treated as identical object; should be 1~300 */
-    @Value("${objdet.detectedbox.distinct.pixel}")
-    public int OBJDET_DETECTEDBOX_DISTINCT_PIXEL;
+    /** threshold for combining similar objects; how close of two objects in ratio is treated as identical object; should be 0.001~0.9 */
+    @Value("${objdet.detectedbox.distinct.ratio}")
+    public float OBJDET_DETECTEDBOX_DISTINCT_RATIO;
 
     @Bean
     public KurentoClient kurento() {
@@ -120,10 +120,10 @@ public class DefaultConfiguration {
             throw new IllegalArgumentException("invalid objdet.detectedbox.speed.millisec, should be 100~2000");
         }
 
-        if (OBJDET_DETECTEDBOX_DISTINCT_PIXEL < 1 || OBJDET_DETECTEDBOX_DISTINCT_PIXEL > 300) {
-            log.error("invalid objdet.detectedbox.distinct.pixel {}, should be 1~300",
-                    OBJDET_DETECTEDBOX_DISTINCT_PIXEL);
-            throw new IllegalArgumentException("invalid objdet.detectedbox.distinct.pixel, should be 1~300");
+        if (OBJDET_DETECTEDBOX_DISTINCT_RATIO < 0.001 || OBJDET_DETECTEDBOX_DISTINCT_RATIO > 0.9) {
+            log.error("invalid objdet.detectedbox.distinct.ratio {}, should be 0.001~0.9",
+                    OBJDET_DETECTEDBOX_DISTINCT_RATIO);
+            throw new IllegalArgumentException("invalid objdet.detectedbox.distinct.ratio, should be 0.001~0.9");
         }
 
         log.info("check pass");

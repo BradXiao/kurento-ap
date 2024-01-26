@@ -66,9 +66,9 @@
             "description": "whether to combine similar objects between frames or not"
         },
         {
-            "name": "objdet.detectedbox.distinct.pixel",
-            "type": "java.lang.Integer",
-            "description": "threshold for combining similar objects; how close of two objects in pixel is treated as identical object; should be 1~300"
+            "name": "objdet.detectedbox.distinct.ratio",
+            "type": "java.lang.Float",
+            "description": "threshold for combining similar objects; how close of two objects in ratio is treated as identical object; should be 0.001~0.9"
         }
     ]
 }
