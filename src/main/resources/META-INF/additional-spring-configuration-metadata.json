@@ -1,0 +1,74 @@
+{
+    "properties": [
+        {
+            "name": "kms.url",
+            "type": "java.lang.String",
+            "description": "Kurento Media Server ip and entrypoint, e.g., http://0.0.0.0:8888/kurento"
+        },
+        {
+            "name": "turn1.internal.sever",
+            "type": "java.lang.String",
+            "description": "TURN server ip from AP (usually LAN IP), e.g., 0.0.0.0:3478?transport=udp"
+        },
+        {
+            "name": "turn1.server",
+            "type": "java.lang.String",
+            "description": "TURN server ip from user (usually public IP), e.g., 111.111.111.111:3478?transport=udp"
+        },
+        {
+            "name": "turn1.name",
+            "type": "java.lang.String",
+            "description": "TURN server name"
+        },
+        {
+            "name": "turn2.internal.sever",
+            "type": "java.lang.String",
+            "description": "TURN server ip from AP (usually LAN IP), e.g., 0.0.0.0:3478?transport=udp"
+        },
+        {
+            "name": "turn2.server",
+            "type": "java.lang.String",
+            "description": "TURN server ip from user (usually public IP), e.g., 111.111.111.111:3478?transport=udp"
+        },
+        {
+            "name": "turn2.name",
+            "type": "java.lang.String",
+            "description": "TURN server name"
+        },
+        {
+            "name": "turn.static-auth-secret",
+            "type": "java.lang.String",
+            "description": "CoTURN static-auth-secret parameter, used for user authentication"
+        },
+        {
+            "name": "objdet.default.confidence",
+            "type": "java.lang.Float",
+            "description": "default confidence for filtering output objects; should be 0.1~0.9"
+        },
+        {
+            "name": "objdet.default.boxlimit",
+            "type": "java.lang.Integer",
+            "description": "default objects maximum output number; should be 1~100"
+        },
+        {
+            "name": "objdet.default.drawbox",
+            "type": "java.lang.Boolean",
+            "description": "default value for drawing objects on the stream or not"
+        },
+        {
+            "name": "objdet.detectedbox.speed.millisec",
+            "type": "java.lang.Integer",
+            "description": "default value for inference delay between frames; should be 100~2000"
+        },
+        {
+            "name": "objdet.detectedbox.distinct",
+            "type": "java.lang.Boolean",
+            "description": "whether to combine similar objects between frames or not"
+        },
+        {
+            "name": "objdet.detectedbox.distinct.pixel",
+            "type": "java.lang.Integer",
+            "description": "threshold for combining similar objects; how close of two objects in pixel is treated as identical object; should be 1~300"
+        }
+    ]
+}
