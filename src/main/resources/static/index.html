@@ -124,38 +124,38 @@
                     <input type="range" class="form-range" min="0.05" max="0.95" step="0.05" id="rangeConfi" />
                 </div>
                 <div class="row settings-form-div">
-                    <label for="rangeBoxLmt" class="settings-form-label">Box limit</label>
-                    <input type="range" class="form-range" min="1" max="100" step="1" id="rangeBoxLmt" />
+                    <label for="rangeBoxLimit" class="settings-form-label">Box limit</label>
+                    <input type="range" class="form-range" min="1" max="100" step="1" id="rangeBoxLimit" />
                 </div>
                 <div class="row settings-form-div">
-                    <label for="rangeInferDly" class="settings-form-label">Inference delay btw. frames (ms)</label>
-                    <input type="range" class="form-range" min="100" max="2000" step="100" id="rangeInferDly" />
+                    <label for="rangeInferDelay" class="settings-form-label">Inference delay btw. frames (ms)</label>
+                    <input type="range" class="form-range" min="100" max="2000" step="100" id="rangeInferDelay" />
                 </div>
                 <div class="form-check form-switch settings-form-div">
                     <input class="form-check-input" type="checkbox" role="switch" id="swDspBoxes" />
                     <label class="form-check-label settings-form-label" for="swDspBoxes">Display detected objects</label>
                 </div>
                 <div class="row settings-form-div">
-                    <label for="selModel" class="settings-form-label">Inference model</label>
-                    <select id="selModel" class="form-select"></select>
+                    <label for="selectModel" class="settings-form-label">Inference model</label>
+                    <select id="selectModel" class="form-select"></select>
                 </div>
                 <div class="row settings-form-div">
-                    <label for="selRelay" class="settings-form-label">Streaming relay server</label>
-                    <select id="selRelay" class="form-select">
+                    <label for="selectRelay" class="settings-form-label">Streaming relay server</label>
+                    <select id="selectRelay" class="form-select">
                         <option value="default">Default</option>
                         <option value="GCP" disabled>GCP (under construction)</option>
                     </select>
                 </div>
                 <div class="row settings-form-div">
-                    <label for="selDisplayMode" class="settings-form-label">Detected objects display mode</label>
-                    <select id="selDisplayMode" class="form-select">
+                    <label for="selectDisplayMode" class="settings-form-label">Detected objects display mode</label>
+                    <select id="selectDisplayMode" class="form-select">
                         <option value="remote">Remotely</option>
                         <option value="local" selected>Locally</option>
                     </select>
                 </div>
                 <div class="row settings-form-div">
-                    <label for="selVideoSrc" class="settings-form-label">Video source</label>
-                    <select id="selVideoSrc" class="form-select">
+                    <label for="selectVideoSrc" class="settings-form-label">Video source</label>
+                    <select id="selectVideoSrc" class="form-select">
                         <option value="remote" selected>Remote</option>
                         <option value="local" disabled>Local</option>
                     </select>
@@ -164,10 +164,10 @@
             <div class="row settings-bottom">
                 <div class="col-4"></div>
                 <div class="col settings-btn-div">
-                    <button type="button" class="btn rounded-pill btn-dark w-75" id="btnStsCancel">Cancel</button>
+                    <button type="button" class="btn rounded-pill btn-dark w-75" id="btnSettingsCancel">Cancel</button>
                 </div>
                 <div class="col settings-btn-div">
-                    <button type="button" class="btn rounded-pill btn-primary w-75" id="btnStsApply">Apply</button>
+                    <button type="button" class="btn rounded-pill btn-primary w-75" id="btnSettingsApply">Apply</button>
                 </div>
             </div>
         </div>

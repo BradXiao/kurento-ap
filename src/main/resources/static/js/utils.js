@@ -1,10 +1,11 @@
 export const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
 /**
- * @returns {String}
- * https://stackoverflow.com/questions/38241480/detect-macos-ios-windows-android-and-linux-os-with-js
+ * get operating system, browser info
+ * @returns {{os: string, browser: string}}
  */
 export function getPlatform() {
+    //https://stackoverflow.com/questions/38241480/detect-macos-ios-windows-android-and-linux-os-with-js
     const userAgent = navigator.userAgent || navigator.vendor || window.opera,
         platform = window.navigator?.userAgentData?.platform || window.navigator.platform,
         macosPlatforms = ["macOS", "Macintosh", "MacIntel", "MacPPC", "Mac68K"],
@@ -50,6 +51,10 @@ export function getPlatform() {
     };
 }
 
+/**
+ * get video sources on device
+ * @returns {Array<{name: string, deviceId: string}>}
+ */
 export async function getWebcams() {
     try {
         // iOS needs to call getUserMedia to get all webcams
@@ -60,7 +65,7 @@ export async function getWebcams() {
         await navigator.mediaDevices.getUserMedia(constraints);
 
         const deviceInfos = await navigator.mediaDevices.enumerateDevices();
-        // Handles being called several times to update labels. Preserve values.
+
         var devices = [];
         for (let i = 0; i !== deviceInfos.length; ++i) {
             const deviceInfo = deviceInfos[i];

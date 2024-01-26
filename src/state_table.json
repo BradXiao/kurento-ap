@@ -1,1 +1,9 @@
-[{ "state": "E001", "meaning": "unknown request (invalid id)" }]
+[
+    { "state": "E001", "meaning": "unknown request (invalid id)" },
+    { "state": "E002", "meaning": "exception while handling requests" },
+    { "state": "E003", "meaning": "unexpected websocket connection exception" },
+    { "state": "E004", "meaning": "model not available" },
+    { "state": "E005", "meaning": "unknown error while starting streaming, look for KMS log for more info" },
+    { "state": "E006", "meaning": "unknown error while changing model, look for KMS log for more info" },
+    { "state": "E007", "meaning": "unexpected error from KMS" }
+]

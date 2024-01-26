@@ -1,7 +1,8 @@
 import * as utils from "./utils.js";
-let dialogIconAni = null;
-let blurFocusAni = null;
+let dialogIconAnimation = null;
+let blurFocusAnimation = null;
 let scrollLock = false;
+
 export function init() {
     window.scrollTo(0, 0);
     $(document).on("click", function () {
@@ -42,7 +43,7 @@ export function init() {
                 }
             });
         });
-    ////content ani
+    ////content animation
     $(".mainpage > div[id!=div-demo] > div").each(function () {
         $(this)
             .find(">*:not(h2)")
@@ -67,26 +68,26 @@ export function init() {
             duration: 1.5,
         }
     );
-    ////dialog icon ani
-    dialogIconAni = gsap.timeline({ repeat: -1 });
+    ////dialog icon animation
+    dialogIconAnimation = gsap.timeline({ repeat: -1 });
     $("#dialog-top")
         .find("img")
         .each(function () {
-            dialogIconAni
+            dialogIconAnimation
                 .to(this, { scale: 1.2, duration: 0.1 }, "1")
                 .to(this, { scale: 1, duration: 0.1, delay: 0.1 }, "<")
                 .to(this, { duration: 0, delay: 1 }, "2");
         });
 
-    dialogIconAni.pause();
+    dialogIconAnimation.pause();
 
-    ////blur focus ani
-    blurFocusAni = gsap.timeline({ repeat: 1 });
+    ////blur focus animation
+    blurFocusAnimation = gsap.timeline({ repeat: 1 });
     $("div[id=loading], div[id=dialog], div[id=settings]").each(function () {
-        blurFocusAni.to(this, { scale: 1.1, duration: 0.05 }, 0).to(this, { scale: 1, duration: 0.05 });
+        blurFocusAnimation.to(this, { scale: 1.1, duration: 0.05 }, 0).to(this, { scale: 1, duration: 0.05 });
     });
 
-    blurFocusAni.pause();
+    blurFocusAnimation.pause();
 
     $("#div-blur").on("click", clickBlur);
 
@@ -109,10 +110,11 @@ export function init() {
             .find("a[href='#" + activeId + "']")
             .addClass("active");
     });
+
     ////others
-    initStsRange();
-    clearObjs();
-    $("#divObjWrapper").hide();
+    initSettingsUIEvents();
+    clearDetectedObjs();
+    hideDetectedObjs();
 }
 
 export async function showLoading(msg = "") {
@@ -153,10 +155,26 @@ export async function hideLoading(hideBlur = true) {
     );
 }
 
+/**
+ * show messages
+ *  @param {string} msg messages
+ * @param {?CallableFunction} okFn
+ *  @param {?string} iconType
+ * @param {?string} btnText
+ */
 export function showMessage(msg, okFn = null, iconType = null, btnText = null) {
     showDialog(msg, "ok", okFn, null, iconType, btnText, null);
 }
 
+/**
+ * show confirmation
+ * @param {string} msg messages
+ * @param {?CallableFunction} okFn
+ * @param {?CallableFunction} cancelFn
+ * @param {?string} iconType "info","warn"
+ * @param {?string} btnOkyesText yes or ok button text
+ * @param {?string} btnCancelText no or cancel text
+ */
 export function showConfirm(msg, okFn = null, cancelFn = null, iconType = null, btnOkText = null, btnCancelText = null) {
     showDialog(msg, "yesno", okFn, cancelFn, iconType, null, null, btnOkText, btnCancelText);
 }
@@ -198,6 +216,116 @@ export function hideSettings() {
     );
 }
 
+export function setStreamOverlay(ttype) {
+    $(".video-overlay-div > img").hide();
+    if (ttype === "stream") {
+        $(".video-overlay-div").show();
+        $(".video-overlay-div > img[name=strm]").show();
+        $(".video-overlay-div > span").text("Streaming").css("color", "#FFFA00");
+    } else if (ttype === "recognition") {
+        $(".video-overlay-div").show();
+        $(".video-overlay-div > img[name=recog]").show();
+        $(".video-overlay-div > span").text("Recognizing").css("color", "#58D100");
+    } else if (ttype === "pause") {
+        $(".video-overlay-div").show();
+        $(".video-overlay-div > img[name=pause]").show();
+        $(".video-overlay-div > span").text("Paused").css("color", "#C40000");
+    } else if (ttype === "stop") {
+        $(".video-overlay-div").hide();
+    } else {
+        console.error("unknown strm overlay");
+    }
+}
+
+export function clearDetectedObjs() {
+    $("#divObjShow").empty();
+}
+
+export async function insertObj(objName) {
+    const totalObjs = $("#divObjShow").children().length;
+    if (totalObjs > 100) {
+        $("#divObjShow")
+            .children(":gt(" + 10 + ")")
+            .remove();
+    }
+
+    $("#divObjShow").prepend(` <div class="obj-wrapper">
+    <div  class="obj-instance"><img class="obj-img" src="img/${objName.replace(" ", "")}.png" /></div>
+    <div class="obj-text"><small><span class="obj-text-ellipsis text-capitalize font-monospace">${objName}</span></small></div>
+    </div>`);
+    $("#divObjShow > div:first").eq(0).show("fast");
+    gsap.to($("#divObjShow > div:first")[0], {
+        duration: 1,
+        opacity: 1,
+    });
+    await utils.sleep(700);
+}
+
+export function clearObjCanvas() {
+    let canvas = document.getElementById("boxCanvas");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+export function drawObjOnCanvas(objs) {
+    let canvas = document.getElementById("boxCanvas");
+    let ctx = canvas.getContext("2d");
+    let dpr = window.devicePixelRatio || 1;
+    ctx.strokeStyle = "#00FF00";
+    ctx.lineWidth = 2;
+    for (var i = 0; i < objs.length; i++) {
+        let box = objs[i];
+        let rawWidth = canvas.width / dpr;
+        let rawHeight = canvas.height / dpr;
+        let x1 = Number((box.x1r * rawWidth).toFixed(0));
+        let y1 = Number((box.y1r * rawHeight).toFixed(0));
+        let w = Number(((box.x2r - box.x1r) * rawWidth).toFixed(0));
+        let h = Number(((box.y2r - box.y1r) * rawHeight).toFixed(0));
+        ctx.strokeRect(x1, y1, w, h);
+
+        let text = `${box.name} - ${Number(parseFloat(box.confi).toFixed(2))}`;
+        ctx.font = "8px Arial";
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        let textWidth = Number(ctx.measureText(text).width.toFixed(0)) + 2;
+
+        ctx.fillStyle = "#00FF00";
+        ctx.fillRect(x1 + 1, y1 + 1, textWidth, 10);
+        ctx.fillStyle = "#000000";
+        ctx.fillText(text, x1 + Number((textWidth / 2).toFixed(0)), y1 + 5);
+    }
+}
+
+export function updateObjCanvasScale() {
+    let canvas = document.getElementById("boxCanvas");
+    let ctx = canvas.getContext("2d");
+    let dpr = window.devicePixelRatio || 1;
+    let rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+}
+
+export function hideDetectedObjs() {
+    $("#divObjWrapper").hide();
+}
+
+// ================================================================================================
+// private functions
+// ================================================================================================
+/**
+ * show dialog
+ * @param {string} msg messages
+ * @param {string} ttype "ok","yesno"
+ * @param {?CallableFunction} okyesFn
+ * @param {?CallableFunction} cancelFn
+ * @param {?string} iconType "info","warn"
+ * @param {?string} btnOkyesText yes or ok button text
+ * @param {?string} btnCancelText no or cancel text
+ * @returns
+ */
 async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType = null, btnOkyesText = null, btnCancelText = null) {
     if ($("#div-blur").is(":visible") == true) {
         await hideLoading(false);
@@ -259,11 +387,11 @@ async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType 
         return;
     }
 
-    dialogIconAni.play();
+    dialogIconAnimation.play();
     $("#dialog-top")
         .find("img[name=" + iconType + "]")
         .show();
-    $("body").css("overflow-y", "hidden");
+
     $("#dialog-text").text(msg);
     if ($("#div-blur").is(":visible") == false) {
         $("#div-blur").show();
@@ -280,104 +408,13 @@ async function showDialog(msg, ttype, okyesFn = null, cancelFn = null, iconType 
             scale: 1,
             onComplete: function () {
                 gsap.set("#dialog", { clearProps: "transform" });
+                $("body").css("overflow-y", "hidden");
             },
         }
     );
 }
 
-export function setStrmOverlay(ttype) {
-    $(".video-overlay-div > img").hide();
-    if (ttype === "strm") {
-        $(".video-overlay-div").show();
-        $(".video-overlay-div > img[name=strm]").show();
-        $(".video-overlay-div > span").text("Streaming").css("color", "#FFFA00");
-    } else if (ttype === "recog") {
-        $(".video-overlay-div").show();
-        $(".video-overlay-div > img[name=recog]").show();
-        $(".video-overlay-div > span").text("Recognizing").css("color", "#58D100");
-    } else if (ttype === "pause") {
-        $(".video-overlay-div").show();
-        $(".video-overlay-div > img[name=pause]").show();
-        $(".video-overlay-div > span").text("Paused").css("color", "#C40000");
-    } else if (ttype === "stop") {
-        $(".video-overlay-div").hide();
-    } else {
-        console.error("unknown strm overlay");
-    }
-}
-
-export function clearObjs() {
-    $("#divObjShow").empty();
-}
-
-export async function insertObj(objName) {
-    const totalObjs = $("#divObjShow").children().length;
-    if (totalObjs > 100) {
-        $("#divObjShow")
-            .children(":gt(" + 10 + ")")
-            .remove();
-    }
-
-    $("#divObjShow").prepend(` <div class="objWrapper">
-    <div  class="objIns"><img class="objImg" src="img/${objName.replace(" ", "")}.png" /></div>
-    <div class="objText"><small><span class="obj-text-ellipsis text-capitalize font-monospace">${objName}</span></small></div>
-    </div>`);
-    $("#divObjShow > div:first").eq(0).show("fast");
-    gsap.to($("#divObjShow > div:first")[0], {
-        duration: 1,
-        opacity: 1,
-    });
-    await utils.sleep(700);
-}
-
-export function clearObjCanvas() {
-    let canvas = document.getElementById("boxCanvas");
-    let ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-export function drawObjOnCanvas(objs) {
-    let canvas = document.getElementById("boxCanvas");
-    let ctx = canvas.getContext("2d");
-    let dpr = window.devicePixelRatio || 1;
-    ctx.strokeStyle = "#00FF00";
-    ctx.lineWidth = 2;
-    for (var i = 0; i < objs.length; i++) {
-        let box = objs[i];
-        let rawWidth = canvas.width / dpr;
-        let rawHeight = canvas.height / dpr;
-        let x1 = Number((box.x1r * rawWidth).toFixed(0));
-        let y1 = Number((box.y1r * rawHeight).toFixed(0));
-        let w = Number(((box.x2r - box.x1r) * rawWidth).toFixed(0));
-        let h = Number(((box.y2r - box.y1r) * rawHeight).toFixed(0));
-        ctx.strokeRect(x1, y1, w, h);
-
-        let text = `${box.name} - ${Number(parseFloat(box.confi).toFixed(2))}`;
-        ctx.font = "8px Arial";
-
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        let textWidth = Number(ctx.measureText(text).width.toFixed(0)) + 2;
-
-        ctx.fillStyle = "#00FF00";
-        ctx.fillRect(x1 + 1, y1 + 1, textWidth, 10);
-        ctx.fillStyle = "#000000";
-        ctx.fillText(text, x1 + Number((textWidth / 2).toFixed(0)), y1 + 5);
-    }
-}
-
-export function updateObjCanvasScale() {
-    let canvas = document.getElementById("boxCanvas");
-    let ctx = canvas.getContext("2d");
-    let dpr = window.devicePixelRatio || 1;
-    let rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
-}
-
-function initStsRange() {
+function initSettingsUIEvents() {
     var ranges = $("#settings > form > div:has(input[type=range])");
     var texts = ["Object confidence threshold: ", "Box limit: ", "Inference delay btw. frames (ms): "];
     for (var i = 0; i < ranges.length; i += 1) {
@@ -394,64 +431,16 @@ function initStsRange() {
 }
 
 function hideDialog() {
-    if ($("div[id=settings]:visible, div[id=loading]:visible, div[id=settings]:visible").length == 0) {
+    if ($("div[id=settings]:visible, div[id=loading]:visible").length == 0) {
         $("body").css("overflow-y", "");
         gsap.fromTo("#div-blur", { opacity: 0.8 }, { opacity: 0.0, duration: 0.3, onComplete: () => $("#div-blur").hide() });
     }
 
     gsap.fromTo("#dialog", { opacity: 1, scale: 1 }, { opacity: 0, duration: 0.3, scale: 0.1, onComplete: () => $("#dialog").hide() });
-    dialogIconAni.pause();
-}
-
-function addAnimationBlink(timeline, element, durationSec, baseDelaySec, blinkDelaySec, startpoint) {
-    timeline
-        .fromTo(
-            element,
-            { opacity: 0 },
-            {
-                delay: baseDelaySec,
-                opacity: 1,
-                duration: durationSec,
-            },
-            startpoint
-        )
-        .to(element, {
-            delay: blinkDelaySec,
-            opacity: 0,
-            duration: durationSec,
-        })
-        .to(element, {
-            delay: 0,
-            opacity: 1,
-            duration: durationSec,
-        })
-        .to(element, {
-            delay: blinkDelaySec,
-            opacity: 0,
-            duration: durationSec,
-        });
-}
-
-function addAnimationGlance(timeline, element, durationSec, baseDelaySec, shownSec, startpoint) {
-    return timeline
-        .fromTo(
-            element,
-            { opacity: 0 },
-            {
-                delay: baseDelaySec,
-                opacity: 1,
-                duration: durationSec,
-            },
-            startpoint
-        )
-        .to(element, {
-            delay: shownSec,
-            opacity: 0,
-            duration: durationSec,
-        });
+    dialogIconAnimation.pause();
 }
 
 function clickBlur() {
-    blurFocusAni.restart();
-    blurFocusAni.play();
+    blurFocusAnimation.restart();
+    blurFocusAnimation.play();
 }

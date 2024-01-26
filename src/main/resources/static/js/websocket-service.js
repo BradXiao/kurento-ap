@@ -11,15 +11,12 @@ export class Service {
     #webRtcPeer = null;
     #heartbeatTimerId = null;
     #turnInfo = null;
-    #selectedModel = null;
-    #streamingMode = 1;
     #isInferring = false;
-    #defaultDeviceId = null;
+    #deviceId = null;
     #relayServer = null;
     #usePrevParam = false;
     #platform = null;
-    #dspMode = "local";
-
+    #displayMode = "local";
     #isRelayConnected = false;
     #relayTimerId = null;
     #relayCheckCounter = 0;
@@ -41,39 +38,33 @@ export class Service {
         $("#btnHelp").on("click", function () {
             ui.showMessage("This function is still developing.");
         });
-        if (self.#streamingMode === 1) {
-            $("#videoInput").hide();
-            $("#videoOutput").show();
-        }
-
-        $("#btnStsApply").on("click", async function () {
+        $("#btnSettingsApply").on("click", async function () {
             ui.showLoading("Apply new settings...");
             ui.hideSettings();
             self.#applySettings();
         });
 
-        $("#btnStsCancel").on("click", function () {
+        $("#btnSettingsCancel").on("click", function () {
             ui.hideSettings();
             self.sendMessage({ id: "getSettings" });
         });
     }
 
     async #initWebcams() {
-        // debugger;
         const webcams = await utils.getWebcams();
         if (webcams.length == 0) {
-            this.#defaultDeviceId = null;
+            self.#deviceId = null;
             ui.showMessage("No video source is available. The demo will not work.", null, "error");
             return;
         }
 
-        $("#selVideoSrc").empty();
+        $("#selectVideoSrc").empty();
         for (var i = 0; i < webcams.length; i += 1) {
             var newOption = $("<option>", {
                 value: webcams[i].deviceId,
                 text: webcams[i].name,
             });
-            $("#selVideoSrc").append(newOption);
+            $("#selectVideoSrc").append(newOption);
         }
 
         if (webcams.length > 1) {
@@ -85,17 +76,17 @@ export class Service {
             for (var i = 0; i < webcams.length; i += 1) {
                 if (webcams[i].name.includes("back")) {
                     isDetected = true;
-                    $("#selVideoSrc").val(webcams[i].deviceId);
+                    $("#selectVideoSrc").val(webcams[i].deviceId);
                     break;
                 }
             }
 
             if (isDetected == false) {
                 //not detected, the last is usually the back cambera
-                $("#selVideoSrc option:last").prop("selected", true);
+                $("#selectVideoSrc option:last").prop("selected", true);
             }
         } else {
-            $("#selVideoSrc").val(webcams[0].deviceId);
+            $("#selectVideoSrc").val(webcams[0].deviceId);
         }
 
         if (self.#deviceId !== null) {
@@ -114,18 +105,18 @@ export class Service {
             username: parsedMessage.username,
             credential: parsedMessage.credential,
         };
-        $("#selRelay").empty();
+        $("#selectRelay").empty();
 
-        $("#selRelay").append(
+        $("#selectRelay").append(
             $("<option>", {
                 value: self.#turnInfo.turnname1,
                 text: self.#turnInfo.turnname1,
             })
         );
-        $("#selRelay").val(self.#turnInfo.turnname1);
+        $("#selectRelay").val(self.#turnInfo.turnname1);
         self.#relayServer = self.#turnInfo.turnname1;
         if (self.#turnInfo.turnname2 !== "") {
-            $("#selRelay").append(
+            $("#selectRelay").append(
                 $("<option>", {
                     value: self.#turnInfo.turnname2,
                     text: self.#turnInfo.turnname2,
@@ -136,13 +127,13 @@ export class Service {
 
     handleModelNames(parsedMessage) {
         var models = parsedMessage["names"];
-        $("#selModel").empty();
+        $("#selectModel").empty();
         for (var i = 0; i < models.length; i += 1) {
             var newOption = $("<option>", {
                 value: models[i],
                 text: models[i],
             });
-            $("#selModel").append(newOption);
+            $("#selectModel").append(newOption);
         }
     }
 
@@ -173,7 +164,7 @@ export class Service {
         await ui.showLoading("Webcam initializing...");
         await self.#initWebcams();
         await ui.showLoading("Prepare streaming...");
-        ui.clearObjs();
+        ui.clearDetectedObjs();
         let turnip = "";
         if (self.#relayServer === self.#turnInfo.turnname1) {
             turnip = self.#turnInfo.turnip1;
@@ -210,12 +201,12 @@ export class Service {
             localVideo: document.getElementById("videoInput"),
             onicecandidate: self.onIceCandidate,
             mediaConstraints: {
-                video: { deviceId: this.#defaultDeviceId },
+                video: { deviceId: this.#deviceId },
                 audio: false,
             },
             configuration: config,
         };
-        if (self.#dspMode === "remote") {
+        if (self.#displayMode === "remote") {
             options.remoteVideo = document.getElementById("videoOutput");
         }
 
@@ -247,7 +238,7 @@ export class Service {
             .addClass("btn-s1")
             .removeClass("btn-warning")
             .addClass("btn-primary");
-        ui.setStrmOverlay("pause");
+        ui.setStreamOverlay("pause");
         ui.clearObjCanvas();
     }
 
@@ -261,9 +252,9 @@ export class Service {
             .removeClass("btn-primary")
             .addClass("btn-warning");
         if (self.#isInferring === true) {
-            ui.setStrmOverlay("recog");
+            ui.setStreamOverlay("recognition");
         } else {
-            ui.setStrmOverlay("strm");
+            ui.setStreamOverlay("stream");
         }
 
         ui.clearObjCanvas();
@@ -287,7 +278,7 @@ export class Service {
             .removeClass("btn-warning")
             .addClass("btn-primary");
         $("#btnStop").prop("disabled", true);
-        ui.setStrmOverlay("stop");
+        ui.setStreamOverlay("stop");
         ui.clearObjCanvas();
     }
 
@@ -300,11 +291,6 @@ export class Service {
         $("video").css("opacity", 1);
 
         self.sendMessage({ id: "getModelNames" });
-        if (self.#streamingMode === 1) {
-            $("#videoInput").hide();
-            $("#videoOutput").show();
-        } else if (self.#streamingMode === 2) {
-        }
 
         $("#btnStartPause")
             .html('<i class="bi bi-pause"></i> <span>Pause</span>')
@@ -315,39 +301,39 @@ export class Service {
         self.sendMessage({ id: "setInferring", sw: "true" });
         if (self.#usePrevParam === true) {
             self.sendMessage({ id: "setConfi", confi: $("#rangeConfi").val() });
-            self.sendMessage({ id: "setBoxLimit", maxNum: $("#rangeBoxLmt").val() });
-            self.sendMessage({ id: "setInferringDelay", delayMs: $("#rangeInferDly").val() });
+            self.sendMessage({ id: "setBoxLimit", maxNum: $("#rangeBoxLimit").val() });
+            self.sendMessage({ id: "setInferringDelay", delayMs: $("#rangeInferDelay").val() });
             self.sendMessage({ id: "setDrawing", sw: $("#swDspBoxes").is(":checked") });
-            self.sendMessage({ id: "changeModel", newModelName: $("#selModel").val() });
-            self.sendMessage({ id: "setRelay", name: $("#selRelay").val() });
-            self.sendMessage({ id: "setDspMode", mode: $("#selDisplayMode").val() });
+            self.sendMessage({ id: "changeModel", newModelName: $("#selectModel").val() });
+            self.sendMessage({ id: "setRelay", name: $("#selectRelay").val() });
+            self.sendMessage({ id: "setDspMode", mode: $("#selectDisplayMode").val() });
             self.#usePrevParam = false;
         }
 
         self.#isInferring = true;
-        ui.setStrmOverlay("recog");
+        ui.setStreamOverlay("recognition");
         self.sendMessage({ id: "getSettings" });
     }
 
     async handleSettings(parsedMessage) {
         $("#rangeConfi").val(parsedMessage.confi).trigger("input");
-        $("#rangeBoxLmt").val(parsedMessage.boxLimit).trigger("input");
-        $("#rangeInferDly").val(parsedMessage.inferringDelay).trigger("input");
+        $("#rangeBoxLimit").val(parsedMessage.boxLimit).trigger("input");
+        $("#rangeInferDelay").val(parsedMessage.inferringDelay).trigger("input");
         $("#swDspBoxes").prop("checked", parsedMessage.isDrawing === "true" ? true : false);
-        $("#selModel").val(parsedMessage.model);
-        $("#selRelay").val(parsedMessage.relay);
-        $("#selDisplayMode").val(parsedMessage.dspMode);
+        $("#selectModel").val(parsedMessage.model);
+        $("#selectRelay").val(parsedMessage.relay);
+        $("#selectDisplayMode").val(parsedMessage.dspMode);
         $("#rangeConfi").val(parsedMessage.confi);
 
         await utils.sleep(1000);
         if (
-            self.#defaultDeviceId !== $("#selVideoSrc").val() ||
-            self.#relayServer !== $("#selRelay").val() ||
-            self.#dspMode !== $("#selDisplayMode").val()
+            self.#deviceId !== $("#selectVideoSrc").val() ||
+            self.#relayServer !== $("#selectRelay").val() ||
+            self.#displayMode !== $("#selectDisplayMode").val()
         ) {
-            self.#defaultDeviceId = $("#selVideoSrc").val();
-            self.#relayServer = $("#selRelay").val();
-            self.#dspMode = $("#selDisplayMode").val();
+            self.#deviceId = $("#selectVideoSrc").val();
+            self.#relayServer = $("#selectRelay").val();
+            self.#displayMode = $("#selectDisplayMode").val();
             self.#usePrevParam = true;
             self.#stopStreaming();
             self.#startStreaming();
@@ -459,12 +445,12 @@ export class Service {
 
     #applySettings() {
         self.sendMessage({ id: "setConfi", confi: $("#rangeConfi").val() });
-        self.sendMessage({ id: "setBoxLimit", maxNum: $("#rangeBoxLmt").val() });
-        self.sendMessage({ id: "setInferringDelay", delayMs: $("#rangeInferDly").val() });
+        self.sendMessage({ id: "setBoxLimit", maxNum: $("#rangeBoxLimit").val() });
+        self.sendMessage({ id: "setInferringDelay", delayMs: $("#rangeInferDelay").val() });
         self.sendMessage({ id: "setDrawing", sw: $("#swDspBoxes").is(":checked") });
-        self.sendMessage({ id: "changeModel", newModelName: $("#selModel").val() });
-        self.sendMessage({ id: "setRelay", name: $("#selRelay").val() });
-        self.sendMessage({ id: "setDspMode", mode: $("#selDisplayMode").val() });
+        self.sendMessage({ id: "changeModel", newModelName: $("#selectModel").val() });
+        self.sendMessage({ id: "setRelay", name: $("#selectRelay").val() });
+        self.sendMessage({ id: "setDspMode", mode: $("#selectDisplayMode").val() });
         self.sendMessage({ id: "getSettings" });
     }
 
@@ -516,7 +502,7 @@ export class Service {
                 ui.showLoading("Switching relay server...");
                 self.#stopStreaming();
                 let newTurnName;
-                if (self.#turnInfo.turnname1 === $("#selRelay").val()) {
+                if (self.#turnInfo.turnname1 === $("#selectRelay").val()) {
                     newTurnName = self.#turnInfo.turnname2;
                 } else {
                     newTurnName = self.#turnInfo.turnname1;
