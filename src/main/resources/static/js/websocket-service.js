@@ -318,9 +318,6 @@ export class Service {
             self.sendMessage({ id: "setRelay", name: $("#selRelay").val() });
             self.sendMessage({ id: "setDspMode", mode: $("#selDisplayMode").val() });
             self.#usePrevParam = false;
-        } else {
-            self.sendMessage({ id: "setInferringDelay", delayMs: 500 });
-            self.sendMessage({ id: "setDrawing", sw: "true" });
         }
 
         self.#isInferring = true;

@@ -410,5 +410,18 @@ public class DefaultService {
         user.setLastBoxes(null);
         user.getWebRtcEndpoint().gatherCandidates();
 
+        //// apply default settings
+        user.setInferringConfi(configuration.OBJDET_DEFAULT_CONFIDENCE);
+        user.setBoxLimit(configuration.OBJDET_DEFAULT_BOXLIMIT);
+        user.setDrawing(configuration.OBJDET_DEFAULT_DRAWBOX);
+        user.setInferringDelay(configuration.OBJDET_DETECTEDBOX_SPEED_MILLISEC);
+
+        user.getObjdet().setConfidence(configuration.OBJDET_DEFAULT_CONFIDENCE);
+        user.getObjdet().setBoxLimit(configuration.OBJDET_DEFAULT_BOXLIMIT);
+        user.getObjdet().setDrawing(configuration.OBJDET_DEFAULT_DRAWBOX, true);
+        user.getObjdet().setInferringDelay(configuration.OBJDET_DETECTEDBOX_SPEED_MILLISEC);
+
+        user.getObjdet().startInferring();
+
     }
 }
