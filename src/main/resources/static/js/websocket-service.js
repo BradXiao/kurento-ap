@@ -353,14 +353,12 @@ export class Service {
             return;
         }
 
-        if (parsedMessage.isDrawing === "true" ? true : false) {
-            if (parsedMessage.dspMode === "local") {
-                $("#videoInput").show();
-                $("#videoOutput").hide();
-            } else {
-                $("#videoInput").hide();
-                $("#videoOutput").show();
-            }
+        if (parsedMessage.dspMode === "local") {
+            $("#videoInput").show();
+            $("#videoOutput").hide();
+        } else {
+            $("#videoInput").hide();
+            $("#videoOutput").show();
         }
 
         if ($("#settings").is(":visible") !== true) {
