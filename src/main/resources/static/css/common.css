@@ -1,0 +1,92 @@
+/* buttons
+ * ================================================================================================*/
+.btn-primary span {
+    margin: 0 0 0 0.5rem;
+}
+
+.btn-primary {
+    background: linear-gradient(-45deg, #0b2b83, #1cb5e0);
+    border: 0;
+}
+
+.btn-danger {
+    background: linear-gradient(-45deg, #6e1b23, #ec495a);
+    border: 0;
+}
+
+.btn-dark {
+    background: linear-gradient(-45deg, #292e31, #606468);
+    border: 0;
+}
+
+.btn-s1 {
+    transition: all 0.3s ease;
+    -webkit-transition: all 0.3s ease;
+    border-radius: 6px;
+    background-size: 400% 400%;
+    padding: 0.5rem 0.8rem;
+    animation: gradient 3s ease infinite;
+    -webkit-animation: gradient 3s ease infinite;
+}
+
+.btn-s1:hover {
+    background-size: 150% 150%;
+}
+
+.button-danger {
+    background: linear-gradient(-45deg, #ce0f0f, #fcb045);
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+/* background blurry
+ * ================================================================================================*/
+#div-blur {
+    background-color: black;
+    z-index: 1025;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    opacity: 0.8;
+    display: none;
+}
+
+/* Others
+ * ================================================================================================*/
+
+.secondary-color {
+    color: var(--secondary-color);
+}
+
+.bi-link-45deg {
+    font-size: smaller;
+}
+
+.badge-mark {
+    transform: translate(0%, -40%) !important;
+    font-size: x-small;
+}
+
+.ul-download-link {
+    margin-top: 1rem;
+}
+
+.div-grid {
+    display: grid;
+}
+
+.zero-pad {
+    padding: 0;
+}
