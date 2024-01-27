@@ -201,7 +201,7 @@ export class Service {
             localVideo: document.getElementById("videoInput"),
             onicecandidate: self.onIceCandidate,
             mediaConstraints: {
-                video: { deviceId: this.#deviceId },
+                video: { deviceId: this.#deviceId, width: { ideal: 1280 }, height: { ideal: 720 } },
                 audio: false,
             },
             configuration: config,

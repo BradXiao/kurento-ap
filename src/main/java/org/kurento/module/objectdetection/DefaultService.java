@@ -83,6 +83,8 @@ public class DefaultService {
         MediaPipeline pipeline = kurento.createMediaPipeline();
         user.setMediaPipeline(pipeline);
         WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).build();
+        webRtcEndpoint.setMaxVideoSendBandwidth(10000);
+        webRtcEndpoint.setEncoderBitrate(10000000);
 
         String[] turnInfo = user.getTurnInfo();
         webRtcEndpoint
