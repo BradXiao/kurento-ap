@@ -395,7 +395,15 @@ export class Service {
 
     handleError(error) {
         console.error(error);
-        ui.showMessage(error, () => $("html").html(""), "error", "Exit");
+        ui.showMessage(
+            error,
+            () => {
+                ui.showLoading("Reloading...");
+                location.reload();
+            },
+            "error",
+            "Retry"
+        );
         self.#stopStreaming();
     }
 
