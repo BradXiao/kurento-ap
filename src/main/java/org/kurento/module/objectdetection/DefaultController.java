@@ -1,13 +1,14 @@
 package org.kurento.module.objectdetection;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
@@ -32,9 +33,6 @@ public class DefaultController implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
     private static final Gson gson = new GsonBuilder().create();
     private static final Logger log = LoggerFactory.getLogger(DefaultController.class);
-
-    @Autowired
-    private Utils utils;
 
     private Session session;
     private DefaultService service;
@@ -106,7 +104,10 @@ public class DefaultController implements ApplicationContextAware {
             }
 
         } catch (Exception e) {
-            String msg = utils.getStackTraceString(e);
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String msg = sw.toString();
             log.error("{}: error handling messages: {}", session.getId(), msg);
             service.sendError(session, "E002", msg);
             service.destroy(session);
