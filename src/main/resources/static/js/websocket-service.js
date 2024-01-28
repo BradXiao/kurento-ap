@@ -97,6 +97,19 @@ export class Service {
     }
 
     handleTurnInfo(parsedMessage) {
+        if (parsedMessage.turnname1 === "") {
+            $("#selectRelay").empty();
+            $("#selectRelay").append(
+                $("<option>", {
+                    value: "",
+                    text: "N/A",
+                }).prop("disabled", true)
+            );
+            self.#turnInfo = null;
+            self.#relayServer = null;
+            return;
+        }
+
         self.#turnInfo = {
             turnname1: parsedMessage.turnname1,
             turnip1: parsedMessage.turnip1,
@@ -165,37 +178,6 @@ export class Service {
         await self.#initWebcams();
         await ui.showLoading("Prepare streaming...");
         ui.clearDetectedObjs();
-        let turnip = "";
-        if (self.#relayServer === self.#turnInfo.turnname1) {
-            turnip = self.#turnInfo.turnip1;
-        } else {
-            turnip = self.#turnInfo.turnip2;
-        }
-
-        let config;
-        if (this.#platform.os === "iOS" || this.#platform.browser === "firefox") {
-            config = {
-                iceServers: [
-                    {
-                        urls: "turn:" + turnip,
-                        username: self.#turnInfo.username,
-                        credential: self.#turnInfo.credential,
-                    },
-                ],
-                iceTransportPolicy: "relay",
-            };
-        } else {
-            config = {
-                iceServers: [
-                    {
-                        url: "turn:" + turnip,
-                        username: self.#turnInfo.username,
-                        credential: self.#turnInfo.credential,
-                    },
-                ],
-                iceTransportPolicy: "relay",
-            };
-        }
 
         var options = {
             localVideo: document.getElementById("videoInput"),
@@ -204,8 +186,41 @@ export class Service {
                 video: { deviceId: this.#deviceId, width: { ideal: 1280 }, height: { ideal: 720 } },
                 audio: false,
             },
-            configuration: config,
         };
+
+        if (self.#turnInfo !== null) {
+            let turnip = "";
+            if (self.#relayServer === self.#turnInfo.turnname1) {
+                turnip = self.#turnInfo.turnip1;
+            } else {
+                turnip = self.#turnInfo.turnip2;
+            }
+
+            if (this.#platform.os === "iOS" || this.#platform.browser === "firefox") {
+                options.configuration = {
+                    iceServers: [
+                        {
+                            urls: "turn:" + turnip,
+                            username: self.#turnInfo.username,
+                            credential: self.#turnInfo.credential,
+                        },
+                    ],
+                    iceTransportPolicy: "relay",
+                };
+            } else {
+                options.configuration = {
+                    iceServers: [
+                        {
+                            url: "turn:" + turnip,
+                            username: self.#turnInfo.username,
+                            credential: self.#turnInfo.credential,
+                        },
+                    ],
+                    iceTransportPolicy: "relay",
+                };
+            }
+        }
+
         if (self.#displayMode === "remote") {
             options.remoteVideo = document.getElementById("videoOutput");
         }
@@ -321,7 +336,10 @@ export class Service {
         $("#rangeInferDelay").val(parsedMessage.inferringDelay).trigger("input");
         $("#swDspBoxes").prop("checked", parsedMessage.isDrawing === "true" ? true : false);
         $("#selectModel").val(parsedMessage.model);
-        $("#selectRelay").val(parsedMessage.relay);
+        if (parsedMessage.relay !== "") {
+            $("#selectRelay").val(parsedMessage.relay);
+        }
+
         $("#selectDisplayMode").val(parsedMessage.dspMode);
         $("#rangeConfi").val(parsedMessage.confi);
 
@@ -457,7 +475,10 @@ export class Service {
         self.sendMessage({ id: "setInferringDelay", delayMs: $("#rangeInferDelay").val() });
         self.sendMessage({ id: "setDrawing", sw: $("#swDspBoxes").is(":checked") });
         self.sendMessage({ id: "changeModel", newModelName: $("#selectModel").val() });
-        self.sendMessage({ id: "setRelay", name: $("#selectRelay").val() });
+        if ($("#selectRelay").val() !== null) {
+            self.sendMessage({ id: "setRelay", name: $("#selectRelay").val() });
+        }
+
         self.sendMessage({ id: "setDspMode", mode: $("#selectDisplayMode").val() });
         self.sendMessage({ id: "getSettings" });
     }
@@ -498,7 +519,7 @@ export class Service {
         self.#relayCheckCounter = 0;
 
         self.#relayTimerId = setInterval(() => {
-            if (self.#isRelayConnected == true) {
+            if (self.#isRelayConnected == true || self.#relayServer === null) {
                 clearInterval(self.#relayTimerId);
                 return;
             }

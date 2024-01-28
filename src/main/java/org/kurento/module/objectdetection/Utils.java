@@ -29,6 +29,10 @@ public class Utils {
      * @return [username, credential] for TURN connection
      */
     public String[] getTurnCredInfo(String sessionId) {
+        if(configuration.TURN_STATIC_AUTH_SECRET.equals("")){
+            log.info("empty turn.static-auth-secret");
+            return new String[] {"",""};    
+        }
         try {
 
             long timestamp = System.currentTimeMillis() / 1000L + 3 * 3600; // 3-hour timeout
@@ -45,7 +49,7 @@ public class Utils {
         } catch (Exception e) {
             log.error("error calculating TURN info: {}", getStackTraceString(e));
         }
-        return null;
+        return new String[] {"",""};
     }
 
     /**

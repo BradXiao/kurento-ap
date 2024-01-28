@@ -61,21 +61,25 @@ public class DefaultService {
         log.info("{}: initKMSSession", session.getId());
         UserSession user = users.get(session.getId());
 
-        String turnserver = jsonMessage.get("turnserver").getAsString();
-        if (turnserver.equals(configuration.TURN1_NAME) == false
-                && turnserver.equals(configuration.TURN2_NAME) == false) {
-            sendError(session, "", "Unknown TURN server!");
-            return;
-        } else {
-            user.setRelayServer(turnserver);
-            log.info("{}: select TURN server {}", session.getId(), turnserver);
-        }
-
         String turnip = "";
-        if (turnserver.equals(configuration.TURN1_NAME)) {
-            turnip = configuration.TURN1_INTERNAL_SERVER;
-        } else if (turnserver.equals(configuration.TURN2_NAME)) {
-            turnip = configuration.TURN2_INTERNAL_SERVER;
+        if (jsonMessage.get("turnserver").isJsonNull() == false) {
+            String turnserver = jsonMessage.get("turnserver").getAsString();
+            if (turnserver.equals(configuration.TURN1_NAME) == false
+                    && turnserver.equals(configuration.TURN2_NAME) == false) {
+                sendError(session, "", "Unknown TURN server!");
+                return;
+            } else {
+                user.setRelayServer(turnserver);
+                log.info("{}: select TURN server {}", session.getId(), turnserver);
+            }
+
+            if (turnserver.equals(configuration.TURN1_NAME)) {
+                turnip = configuration.TURN1_INTERNAL_SERVER;
+            } else if (turnserver.equals(configuration.TURN2_NAME)) {
+                turnip = configuration.TURN2_INTERNAL_SERVER;
+            }
+        } else {
+            user.setRelayServer("");
         }
 
         log.info("{}: init streaming", session.getId());
@@ -86,9 +90,12 @@ public class DefaultService {
         webRtcEndpoint.setMaxVideoSendBandwidth(10000);
         webRtcEndpoint.setEncoderBitrate(10000000);
 
-        String[] turnInfo = user.getTurnInfo();
-        webRtcEndpoint
-                .setTurnUrl(String.format("%s:%s@%s", turnInfo[0], turnInfo[1], turnip));
+        if (turnip.equals("") == false) {
+            String[] turnInfo = user.getTurnInfo();
+            webRtcEndpoint
+                    .setTurnUrl(String.format("%s:%s@%s", turnInfo[0], turnInfo[1], turnip));
+        }
+
         user.setWebRtcEndpoint(webRtcEndpoint);
 
         ObjDet objDetFilter = new ObjDet.Builder(pipeline).build();
@@ -199,6 +206,10 @@ public class DefaultService {
     public void setRelay(final Session session, final JsonObject jsonMessage) {
         log.info("{}: set relay server", session.getId());
         UserSession user = users.get(session.getId());
+        if (jsonMessage.get("name").isJsonNull()) {
+            log.info("{}: TURN server not used", session.getId());
+            return;
+        }
         String turnserver = jsonMessage.get("name").getAsString();
         if (turnserver.equals(configuration.TURN1_NAME) == false
                 && turnserver.equals(configuration.TURN2_NAME) == false) {
